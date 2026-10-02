@@ -1,5 +1,3 @@
-package org.automation.tests;
-
 import org.automation.DriverManager;
 import org.automation.BrowserType;
 import org.utilities.DvwaEnvironment;
