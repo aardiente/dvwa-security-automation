@@ -1,5 +1,6 @@
 This project relies on an instance of DockerDesktop running and configured.
-- For windows: WSL Integration
+- For windows:
+    Resources-> WSL Integration-> Enable "Enable integration with my default WSL distro"
 - Settings-> Docker Engine ->
 {
   "builder": {
