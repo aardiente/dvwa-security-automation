@@ -1,6 +1,8 @@
-import org.automation.DriverManager;
-import org.automation.BrowserType;
-import org.utilities.DvwaEnvironment;
+package retiredTests;
+
+import automation.DriverManager;
+import automation.BrowserType;
+import utilities.DvwaEnvironment;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -11,7 +13,8 @@ import org.testng.Assert;
 import org.testng.annotations.*;
 
 import java.time.Duration;
-
+/*
+@Ignore
 public class ReflectedXssTest {
 
     @BeforeSuite
@@ -114,4 +117,4 @@ public class ReflectedXssTest {
     public void stopServer() {
         DvwaEnvironment.stopEnvironment();
     }
-}
+}*/

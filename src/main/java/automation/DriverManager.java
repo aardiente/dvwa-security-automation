@@ -1,7 +1,6 @@
-package org.automation;
+package automation;
 
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.remote.Browser;
 import org.openqa.selenium.support.events.EventFiringDecorator;
 
 import java.time.Duration;

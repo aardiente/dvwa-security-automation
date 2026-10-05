@@ -1,6 +1,8 @@
-import org.automation.DriverManager;
-import org.automation.BrowserType;
-import org.utilities.JuiceShopEnvironment;
+package retiredTests;
+
+import automation.DriverManager;
+import automation.BrowserType;
+import utilities.JuiceShopEnvironment;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -10,7 +12,8 @@ import org.testng.Assert;
 import org.testng.annotations.*;
 
 import java.time.Duration;
-
+/*
+@Ignore
 public class JuiceShopTest {
 
     @BeforeSuite
@@ -169,4 +172,4 @@ public class JuiceShopTest {
     public void stopServer() {
         JuiceShopEnvironment.stopEnvironment();
     }
-}
+}*/

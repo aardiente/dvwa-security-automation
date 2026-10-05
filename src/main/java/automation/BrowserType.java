@@ -1,4 +1,4 @@
-package org.automation;
+package automation;
 
 public enum BrowserType
 {

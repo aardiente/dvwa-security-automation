@@ -52,5 +52,17 @@
             <version>1.7.36</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Apache POI for Excel (.xlsx) support -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>5.2.3</version>
+        </dependency>
     </dependencies>
 </project>

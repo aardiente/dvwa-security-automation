@@ -1,4 +1,4 @@
-package org.automation;
+package automation;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
