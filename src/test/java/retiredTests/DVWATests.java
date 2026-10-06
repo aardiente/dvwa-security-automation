@@ -1,8 +1,7 @@
-package tests;
+package retiredTests;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -27,21 +26,21 @@ public class DVWATests
     /*******************************************************************************/
     // Docker Server Handlers
     @BeforeSuite
-    public void startServer(){ this.container = new DvwaEnvironment(); this.container.startEnvironment(); }
+    private void startServer(){ this.container = new DvwaEnvironment(); this.container.startEnvironment(); }
     @AfterSuite
-    public void stopServer(){ this.container.stopEnvironment(); }
+    private void stopServer(){ this.container.stopEnvironment(); }
 
     /*******************************************************************************/
     // Selenium Browser Handlers
     @BeforeMethod
-    public void initBrowser(){ DriverManager.initDriver(BrowserType.CHROME); }
+    private void initBrowser(){ DriverManager.initDriver(BrowserType.CHROME); }
     @AfterMethod
-    public void closeBrowser(){ DriverManager.quitDriver(); }
+    private void closeBrowser(){ DriverManager.quitDriver(); }
 
     /*******************************************************************************/
     // Container Helpers
     @BeforeClass
-    public void initDvwaDatabase()
+    private void initDvwaDatabase()
     {
         LoginPage loginPage = new LoginPage( DriverManager.getDriver() );
         String baseUrl = container.getURL();
@@ -62,7 +61,8 @@ public class DVWATests
     /*******************************************************************************/
     // Tests
     @Test
-    public void XSS_Reflected() throws InterruptedException {
+    public void XSS_Reflected() throws InterruptedException
+    {
         var driver = DriverManager.getDriver();
         String baseUrl = this.container.getURL();
 

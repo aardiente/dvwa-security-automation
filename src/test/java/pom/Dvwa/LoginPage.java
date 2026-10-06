@@ -1,11 +1,12 @@
 package pom.Dvwa;
 
+import automation.DriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 public class LoginPage extends BasePage
 {
-    public final String loginEndpoint = "/login.php";
+    public static final String loginEndpoint = "/login.php";
     // 💡 Locators
     private final By usernameField = By.name("username");
     private final By passwordField = By.name("password");
@@ -23,6 +24,7 @@ public class LoginPage extends BasePage
         driver.findElement(passwordField).sendKeys(password);
         driver.findElement(loginButton).click();
     }
+
 
     public WebDriver getDriver()
     {
