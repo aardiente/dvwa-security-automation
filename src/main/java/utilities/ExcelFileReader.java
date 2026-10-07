@@ -11,68 +11,50 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
-public class ExcelFileReader {
+public class ExcelFileReader
+{
 
-    public static Object[][] extractData(String fileName, String sheetName) {
+    public static Object[][] extractData(String fileName, String sheetName)
+    {
         Object[][] data = null;
 
-        // 1. Strip away any accidental folder paths passed in the string (e.g., "src/test/.../Logins.xlsx" becomes "Logins.xlsx")
-        String cleanFileName = new File(fileName).getName();
+        try (FileInputStream fs = new FileInputStream(fileName);
+             Workbook book = new XSSFWorkbook(fs))
+        {
 
-        // 2. Get the root directory of your project
-        String projectDir = System.getProperty("user.dir");
-        File targetFile = null;
+            // Default to the first sheet if sheetName is null
+            Sheet sheet = (sheetName == null) ? book.getSheetAt(0) : book.getSheet(sheetName);
 
-        // 3. Dynamically scan the project folder to find the file wherever it lives
-        try (Stream<Path> paths = Files.walk(Paths.get(projectDir))) {
-            targetFile = paths
-                    .filter(Files::isRegularFile)
-                    .filter(p -> p.getFileName().toString().equals(cleanFileName))
-                    .map(Path::toFile)
-                    .findFirst()
-                    .orElse(null);
-        } catch (IOException e) {
-            System.out.println("Error scanning project directory.");
-        }
-
-        // 4. Fail if the file genuinely does not exist in the project
-        if (targetFile == null) {
-            throw new RuntimeException("FileNotFound: Could not find '" + cleanFileName + "' anywhere inside " + projectDir);
-        }
-
-        System.out.println("Found test data file at: " + targetFile.getAbsolutePath());
-
-        // 5. Read the Excel File
-        try (FileInputStream fs = new FileInputStream(targetFile)) {
-            Workbook book = new XSSFWorkbook(fs);
-            Sheet sheet = book.getSheet(sheetName);
-
-            if (sheet == null) {
-                throw new RuntimeException("Sheet '" + sheetName + "' does not exist in " + cleanFileName);
+            if (sheet == null)
+            {
+                throw new RuntimeException("Sheet not found in " + fileName);
             }
 
             int rowCount = sheet.getLastRowNum();
             int colCount = sheet.getRow(0).getLastCellNum();
-
             data = new Object[rowCount][colCount];
 
+            // DataFormatter safely extracts strings, numbers, and handles empty/null cells automatically
+            DataFormatter formatter = new DataFormatter();
+
+            // i = 1 to skip the header row
             for (int i = 1; i <= rowCount; i++) {
                 Row row = sheet.getRow(i);
-
                 if (row != null) {
                     for (int j = 0; j < colCount; j++) {
-                        Cell cell = row.getCell(j);
-
-                        if (cell == null) {
-                            data[i - 1][j] = "";
-                        } else {
-                            data[i - 1][j] = cell.getStringCellValue();
-                        }
+                        data[i - 1][j] = formatter.formatCellValue(row.getCell(j));
+                    }
+                } else {
+                    // Fill empty rows with blank strings
+                    for (int j = 0; j < colCount; j++) {
+                        data[i - 1][j] = "";
                     }
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException("Failed to read Excel file: " + fileName, e);
         }
 
         return data;

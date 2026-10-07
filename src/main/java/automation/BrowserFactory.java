@@ -12,7 +12,7 @@ import org.openqa.selenium.safari.SafariOptions;
 
 public class BrowserFactory
 {
-    private static final boolean IS_HEADLESS = false;
+    private static final boolean IS_HEADLESS = true;
     private static final String headless = "--headless=new";
 
     public static WebDriver createDriver(BrowserType brow)
