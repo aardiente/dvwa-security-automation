@@ -1,6 +1,8 @@
-import org.automation.DriverManager;
-import org.automation.BrowserType;
-import org.utilities.DvwaEnvironment;
+package retiredTests;
+
+import automation.DriverManager;
+import automation.BrowserType;
+import utilities.DvwaEnvironment;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -10,7 +12,8 @@ import org.testng.Assert;
 import org.testng.annotations.*;
 
 import java.time.Duration;
-
+/*
+@Ignore
 public class SqlInjectionTest {
 
     @BeforeSuite
@@ -104,4 +107,4 @@ public class SqlInjectionTest {
     public void stopServer() {
         DvwaEnvironment.stopEnvironment();
     }
-}
+}*/

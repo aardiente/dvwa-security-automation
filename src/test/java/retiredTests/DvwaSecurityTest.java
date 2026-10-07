@@ -1,11 +1,13 @@
+package retiredTests;
+/*
 import org.openqa.selenium.By;
-import org.utilities.DvwaEnvironment;
+import utilities.DvwaEnvironment;
 
-import org.automation.BrowserType;
-import org.automation.DriverManager;
-import org.utilities.DvwaEnvironment;
+import automation.BrowserType;
+import automation.DriverManager;
 import org.testng.annotations.*;
 
+@Ignore
 public class DvwaSecurityTest {
 
     @BeforeSuite
@@ -53,4 +55,4 @@ public class DvwaSecurityTest {
     public void stopServer() {
         DvwaEnvironment.stopEnvironment();
     }
-}
+}*/
