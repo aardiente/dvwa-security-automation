@@ -8,6 +8,7 @@ import org.openqa.selenium.support.events.WebDriverListener;
 public class SlowMoListener implements WebDriverListener {
 
     private final WebDriver driver;
+    private final int delay = 250;
 
     public SlowMoListener(WebDriver driver) {
         this.driver = driver;
@@ -32,8 +33,8 @@ public class SlowMoListener implements WebDriverListener {
             // Draw a thick red border around the target element
             js.executeScript("arguments[0].style.border='4px solid red'", element);
 
-            // Pause for 1.5 seconds so the audience can see the target
-            Thread.sleep(1500);
+            // Pause based on the set delay (ms) 250 prevents race conditions - 1500 for visual verification
+            Thread.sleep(delay);
 
             // Remove the border so the page looks normal again
             js.executeScript("arguments[0].style.border=''", element);

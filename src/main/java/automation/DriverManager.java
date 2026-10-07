@@ -9,7 +9,6 @@ public class DriverManager
 {
     private static final ThreadLocal<WebDriver> driver = new ThreadLocal<>();
     private static final int DefaultTimeOut = 10;
-    private static final boolean ENABLE_SLOW_MO = true;
 
     private DriverManager(){}
 
@@ -21,17 +20,9 @@ public class DriverManager
             webDriver.manage().window().maximize();
             webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(DefaultTimeOut));
 
-            // Wrap the driver with the listener only if the boolean is true
-            if (ENABLE_SLOW_MO)
-            {
-                SlowMoListener listener = new SlowMoListener(webDriver);
-                WebDriver decoratedDriver = new EventFiringDecorator<>(listener).decorate(webDriver);
-                driver.set(decoratedDriver);
-            }
-            else
-            {
-                driver.set(webDriver);
-            }
+            SlowMoListener listener = new SlowMoListener(webDriver);
+            WebDriver decoratedDriver = new EventFiringDecorator<>(listener).decorate(webDriver);
+            driver.set(decoratedDriver);
         }
     }
 

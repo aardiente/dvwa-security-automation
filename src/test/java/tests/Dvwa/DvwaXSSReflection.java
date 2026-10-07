@@ -61,13 +61,19 @@ public class DvwaXSSReflection extends BaseDvwaTest
 
         driver.get(baseUrl + LoginPage.loginEndpoint);
         LoginPage loginPage = new LoginPage(driver);
+
+        //loginPage.waitForPageLoad(LoginPage.loginEndpoint);
         loginPage.login("admin", "password");
 
         driver.get(baseUrl + SecurityPage.securityEndpoint);
         SecurityPage securityPage = new SecurityPage(driver);
+
+        //securityPage.waitForPageLoad(SecurityPage.securityEndpoint);
         securityPage.setSecurityLevel(securityLevel);
 
         loginPage.navigateToXssReflected();
+
+        //securityPage.waitForPageLoad(SecurityPage.securityEndpoint);
 
         WebDriverWait pageSettlementWait = new WebDriverWait(driver, Duration.ofSeconds(5));
         pageSettlementWait.until(ExpectedConditions.urlContains("xss_r"));
