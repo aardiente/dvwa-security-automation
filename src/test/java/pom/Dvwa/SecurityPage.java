@@ -15,6 +15,13 @@ public class SecurityPage extends BasePage
     private static final By TXT_INPUT_FIELD = By.cssSelector("input[type='text'], input[name='txt']");
     private static final By ACTION_SUBMIT_BUTTON = By.cssSelector("input[type='submit'], button[type='submit']");
 
+    // PHPIDS & Security Text Locators
+    private static final By SECURITY_STATUS_LABEL = By.xpath("//div[@class='vulnerable_code_area']//p[contains(text(), 'Security level is currently:')]");
+    private static final By PHPIDS_STATUS_LABEL = By.xpath("//div[@class='vulnerable_code_area']//p[contains(text(), 'PHPIDS is currently:')]");
+    private static final By PHPIDS_TOGGLE_BUTTON = By.name("phpids_submit");
+    private static final By SIMULATE_ATTACK_LINK = By.linkText("Simulate attack");
+    private static final By VIEW_IDS_LOG_LINK = By.linkText("View IDS log");
+
     public SecurityPage(WebDriver driver)
     {
         super(driver);
@@ -40,11 +47,39 @@ public class SecurityPage extends BasePage
         wait.until(ExpectedConditions.elementToBeClickable(ACTION_SUBMIT_BUTTON)).click();
     }
 
+    public void clickTogglePhpIds()
+    {
+        wait.until(ExpectedConditions.elementToBeClickable(PHPIDS_TOGGLE_BUTTON)).click();
+    }
+
+    public void clickSimulateAttack()
+    {
+        wait.until(ExpectedConditions.elementToBeClickable(SIMULATE_ATTACK_LINK)).click();
+    }
+
+    public void clickViewIdsLog()
+    {
+        wait.until(ExpectedConditions.elementToBeClickable(VIEW_IDS_LOG_LINK)).click();
+    }
+
+    public String getCurrentSecurityLevelText()
+    {
+        var element = wait.until(ExpectedConditions.visibilityOfElementLocated(SECURITY_STATUS_LABEL));
+        return element.getText();
+    }
+
+    public String getCurrentPhpIdsStatusText()
+    {
+        var element = wait.until(ExpectedConditions.visibilityOfElementLocated(PHPIDS_STATUS_LABEL));
+        return element.getText();
+    }
+
     public enum SecurityLevel
     {
         LOW("low"),
         MEDIUM("medium"),
-        HIGH("high");
+        HIGH("high"),
+        IMPOSSIBLE("impossible");
 
         private final String descriptor;
 
@@ -59,4 +94,3 @@ public class SecurityPage extends BasePage
         public String toString() { return descriptor; }
     }
 }
-

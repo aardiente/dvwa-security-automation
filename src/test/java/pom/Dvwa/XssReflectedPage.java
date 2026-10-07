@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver;
 
 public class XssReflectedPage extends BasePage {
 
+    private static final String xssReflectedEndpoint = "vulnerabilities/xss_r/";
     // 💡 Static final locators that never change
     private static final By NAME_INPUT_FIELD = By.name("name");
     private static final By SUBMIT_BUTTON = By.cssSelector("input[value='Submit']");
