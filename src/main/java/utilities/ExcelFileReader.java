@@ -5,55 +5,71 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.stream.Stream;
 
-public class ExcelFileReader
-{
+public class ExcelFileReader {
 
-    public static Object[][] extractData(String fileName, String sheetName)
-    {
+    // 1. Original Signature: Defaults to skipping the header (Keeps JuiceShop/Logins working)
+    public static Object[][] extractData(String fileName, String sheetName) {
+        return extractData(fileName, sheetName, true);
+    }
+
+    // 2. New Signature: Allows you to explicitly say "false" to read row 0
+    public static Object[][] extractData(String fileName, String sheetName, boolean skipHeader) {
         Object[][] data = null;
 
-        try (FileInputStream fs = new FileInputStream(fileName);
-             Workbook book = new XSSFWorkbook(fs))
-        {
+        InputStream is = ExcelFileReader.class.getClassLoader().getResourceAsStream(fileName);
 
-            // Default to the first sheet if sheetName is null
+        if (is == null) {
+            try {
+                File file = new File(fileName);
+                if (file.exists()) {
+                    is = new FileInputStream(file);
+                }
+            } catch (Exception e) {
+                // Ignore, null check below will handle failure
+            }
+        }
+
+        if (is == null) {
+            throw new RuntimeException("Failed to locate Excel file: " + fileName + ". Ensure the path is correct or the file is in the resources directory.");
+        }
+
+        try (InputStream stream = is;
+             Workbook book = new XSSFWorkbook(stream)) {
+
             Sheet sheet = (sheetName == null) ? book.getSheetAt(0) : book.getSheet(sheetName);
 
-            if (sheet == null)
-            {
+            if (sheet == null) {
                 throw new RuntimeException("Sheet not found in " + fileName);
             }
 
-            int rowCount = sheet.getLastRowNum();
+            int lastRowIndex = sheet.getLastRowNum();
             int colCount = sheet.getRow(0).getLastCellNum();
-            data = new Object[rowCount][colCount];
 
-            // DataFormatter safely extracts strings, numbers, and handles empty/null cells automatically
+            // Adjust array size and starting row based on whether a header exists
+            int arraySize = skipHeader ? lastRowIndex : lastRowIndex + 1;
+            int startRow = skipHeader ? 1 : 0;
+
+            data = new Object[arraySize][colCount];
             DataFormatter formatter = new DataFormatter();
 
-            // i = 1 to skip the header row
-            for (int i = 1; i <= rowCount; i++) {
+            for (int i = startRow; i <= lastRowIndex; i++) {
                 Row row = sheet.getRow(i);
+                int dataRowIndex = skipHeader ? i - 1 : i;
+
                 if (row != null) {
                     for (int j = 0; j < colCount; j++) {
-                        data[i - 1][j] = formatter.formatCellValue(row.getCell(j));
+                        data[dataRowIndex][j] = formatter.formatCellValue(row.getCell(j));
                     }
                 } else {
-                    // Fill empty rows with blank strings
                     for (int j = 0; j < colCount; j++) {
-                        data[i - 1][j] = "";
+                        data[dataRowIndex][j] = "";
                     }
                 }
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new RuntimeException("Failed to read Excel file: " + fileName, e);
         }
 

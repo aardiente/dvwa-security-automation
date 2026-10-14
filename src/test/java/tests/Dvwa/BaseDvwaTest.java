@@ -11,11 +11,14 @@ import automation.DriverManager;
 import utilities.DvwaEnvironment;
 
 import pom.Dvwa.*;
+import utilities.ExcelFileReader;
 
 public abstract class BaseDvwaTest
 {
     protected static DvwaEnvironment container;
     protected static String baseUrl;
+    protected String payloadSource = "";
+    protected String[] securityLevels = {"low", "medium", "high"};
 
     /********************************************************************/
 
@@ -58,6 +61,25 @@ public abstract class BaseDvwaTest
         DriverManager.quitDriver();
     }
 
+    @DataProvider(name = "securityAndPayloads")
+    public Object[][] getSecurityAndPayloads()
+    {
+        Object[][] payloadsFromExcel = ExcelFileReader.extractData(payloadSource, null);
+        Object[][] testData = new Object[payloadsFromExcel.length * securityLevels.length][2];
+
+        int index = 0;
+        for (String level : securityLevels) {
+            for (Object[] row : payloadsFromExcel) {
+                testData[index][0] = level;
+
+                // Extracting the payload from the first column of the Excel row
+                testData[index][1] = row[0].toString();
+                index++;
+            }
+        }
+
+        return testData;
+    }
 
 
 
