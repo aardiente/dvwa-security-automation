@@ -7,6 +7,7 @@ import java.util.List;
 
 public class SqlInjectionPage extends BasePage
 {
+    public final static String endpoint = "/sqli.php";
 
     // 💡 Locators
     private final By idInputField = By.name("id");

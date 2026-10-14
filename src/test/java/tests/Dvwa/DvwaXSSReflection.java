@@ -20,6 +20,8 @@ import java.time.Duration;
 
 public class DvwaXSSReflection extends BaseDvwaTest
 {
+
+
     @DataProvider(name = "securityAndPayloads")
     public Object[][] getSecurityAndPayloads()
     {
@@ -90,9 +92,6 @@ public class DvwaXSSReflection extends BaseDvwaTest
 
             Alert alert = driver.switchTo().alert();
             System.out.println("Visual Verification Confirmed: " + alert.getText());
-
-            // Keep this sleep context active so you can visually verify the pop up
-            //Thread.sleep(3000);
 
             alert.accept();
             xssExecuted = true;
