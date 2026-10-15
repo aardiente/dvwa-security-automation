@@ -1,6 +1,4 @@
-package utilities;
-
-import org.testcontainers.containers.GenericContainer;
+package utilities.Docker;
 
 public class DvwaEnvironment extends DockerContainer
 {

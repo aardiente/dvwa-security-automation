@@ -1,7 +1,7 @@
 package retiredTests;
 /*
 import org.openqa.selenium.By;
-import utilities.DvwaEnvironment;
+import utilities.Docker.DvwaEnvironment;
 
 import automation.BrowserType;
 import automation.DriverManager;

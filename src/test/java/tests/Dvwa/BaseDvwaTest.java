@@ -5,10 +5,9 @@ import org.openqa.selenium.WebDriver;
 
 import org.testng.annotations.*;
 
-import automation.BrowserType;
-import automation.DriverManager;
+import automation.ZapManager;
 
-import utilities.DvwaEnvironment;
+import utilities.Docker.DvwaEnvironment;
 
 import pom.Dvwa.*;
 import utilities.ExcelFileReader;
@@ -27,28 +26,34 @@ public abstract class BaseDvwaTest
     {
         container = new DvwaEnvironment();
         container.startEnvironment();
-        baseUrl = container.getURL();
+        baseUrl = container.getInternalURL();
+
+        ZapManager.initZap();
     }
 
     @AfterSuite(alwaysRun = true)
     public void stopServer()
     {
+        ZapManager.generateReport();
+        ZapManager.quitZap();
+
         if(container != null)
             container.stopEnvironment();
     }
     /********************************************************************/
 
     @BeforeMethod
-    public void initBrowser() { DriverManager.initDriver(BrowserType.CHROME); }
+    public void initBrowser() { ZapManager.initZapDriver(); }
+
     @AfterMethod
-    public void closeBrowser(){ DriverManager.quitDriver(); }
+    public void closeBrowser() { ZapManager.quitZapDriver(); }
 
     /********************************************************************/
     @BeforeClass
     public void initDvwaDatabase()
     {
-        DriverManager.initDriver(BrowserType.CHROME);
-        WebDriver driver = DriverManager.getDriver();
+        ZapManager.initZapDriver();
+        WebDriver driver = ZapManager.getDriver();
         LoginPage loginPage = new LoginPage(driver);
 
         driver.get(baseUrl + loginPage.loginEndpoint);
@@ -58,7 +63,7 @@ public abstract class BaseDvwaTest
         driver.findElement(By.name("create_db")).click();
         System.out.println("Global DB Initialized");
 
-        DriverManager.quitDriver();
+        ZapManager.quitZapDriver();
     }
 
     @DataProvider(name = "securityAndPayloads")
@@ -80,7 +85,4 @@ public abstract class BaseDvwaTest
 
         return testData;
     }
-
-
-
 }

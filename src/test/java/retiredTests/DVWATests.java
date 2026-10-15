@@ -9,7 +9,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
-import utilities.DvwaEnvironment;
+import utilities.Docker.DvwaEnvironment;
 
 import automation.BrowserType;
 import automation.DriverManager;
