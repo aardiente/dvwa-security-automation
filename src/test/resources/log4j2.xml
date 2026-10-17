@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Property>
+        <Property name="LOG_DIR">logs</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- 1. Test Execution Logs -->
+        <RollingFile name="TestsFile" fileName="${LOG_DIR}/tests.log"
+                     filePattern="${LOG_DIR}/tests-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+        </RollingFile>
+
+        <!-- 2. Selenium WebDriver Logs -->
+        <RollingFile name="SeleniumFile" fileName="${LOG_DIR}/selenium.log"
+                     filePattern="${LOG_DIR}/selenium-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+        </RollingFile>
+
+        <!-- 3. Docker & Testcontainers Logs -->
+        <RollingFile name="DockerFile" fileName="${LOG_DIR}/docker.log"
+                     filePattern="${LOG_DIR}/docker-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+        </RollingFile>
+
+        <!-- 4. OWASP ZAP Logs -->
+        <RollingFile name="ZapFile" fileName="${LOG_DIR}/zap.log"
+                     filePattern="${LOG_DIR}/zap-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+        </RollingFile>
+
+        <!-- 5. General Framework / Catch-All Logs -->
+        <RollingFile name="FrameworkFile" fileName="${LOG_DIR}/framework.log"
+                     filePattern="${LOG_DIR}/framework-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- 1. YOUR TESTS LOGGER (Update package name if different) -->
+        <Logger name="tests" level="DEBUG" additivity="false">
+            <AppenderRef ref="TestsFile"/>
+        </Logger>
+        <Logger name="com.automation" level="DEBUG" additivity="false">
+            <AppenderRef ref="TestsFile"/>
+        </Logger>
+
+        <!-- 2. SELENIUM LOGGER -->
+        <Logger name="org.openqa.selenium" level="INFO" additivity="false">
+            <AppenderRef ref="SeleniumFile"/>
+        </Logger>
+
+        <!-- 3. DOCKER / TESTCONTAINERS LOGGERS -->
+        <Logger name="org.testcontainers" level="INFO" additivity="false">
+            <AppenderRef ref="DockerFile"/>
+        </Logger>
+        <Logger name="com.github.dockerjava" level="WARN" additivity="false">
+            <AppenderRef ref="DockerFile"/>
+        </Logger>
+        <Logger name="docker" level="DEBUG" additivity="false">
+            <AppenderRef ref="DockerFile"/>
+        </Logger>
+
+        <!-- 4. OWASP ZAP LOGGERS (Covers ZAP Client API + your custom ZapManager/ZAP classes) -->
+        <Logger name="org.zaproxy" level="DEBUG" additivity="false">
+            <AppenderRef ref="ZapFile"/>
+        </Logger>
+        <Logger name="zap" level="DEBUG" additivity="false">
+            <AppenderRef ref="ZapFile"/>
+        </Logger>
+
+        <!-- 5. ROOT LOGGER (Catches anything else) -->
+        <Root level="INFO">
+            <AppenderRef ref="FrameworkFile"/>
+        </Root>
+    </Loggers>
+</Configuration>

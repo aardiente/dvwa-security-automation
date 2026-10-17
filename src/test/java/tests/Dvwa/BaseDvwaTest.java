@@ -24,6 +24,8 @@ public abstract class BaseDvwaTest
     @BeforeSuite
     public void startServer()
     {
+        //System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
+
         container = new DvwaEnvironment();
         container.startEnvironment();
         baseUrl = container.getInternalURL();
