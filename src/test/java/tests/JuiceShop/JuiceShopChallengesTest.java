@@ -331,8 +331,6 @@ public class JuiceShopChallengesTest extends JuiceShopBaseTest
         return response;
     }
 
-
-
     @SuppressWarnings("unchecked")
     private void assertChallengeSolved(String challengeName) {
         var driver = ZapManager.getDriver();

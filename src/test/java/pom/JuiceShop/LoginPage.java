@@ -5,11 +5,16 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.ElementClickInterceptedException;
+
+import java.util.List;
+import java.time.Duration;
 
 public class LoginPage extends BasePage {
 
-    private final By dismissButton = By.cssSelector("button.close-dialog");
-    private final By welcomeBannerDismiss = By.cssSelector("a.close-dialog");
+    private final By welcomeClose = By.cssSelector("button[aria-label='Close Welcome Banner']");
+    private final By welcomeBackdrop = By.cssSelector(".cdk-overlay-backdrop");
     private final By cookieDialog = By.cssSelector(".cc-window[aria-label='cookieconsent']");
     private final By cookieDismiss = By.cssSelector("a[aria-label='dismiss cookie message']");
 
@@ -32,30 +37,49 @@ public class LoginPage extends BasePage {
     @Override
     public void dismissInitialOverlays() {
         try {
-            wait.until(ExpectedConditions.elementToBeClickable(dismissButton)).click();
-        } catch (Exception ignored) {}
+            WebDriverWait startupWait = new WebDriverWait(driver, Duration.ofSeconds(3));
+            WebElement closeButton = startupWait.until(
+                    ExpectedConditions.visibilityOfElementLocated(welcomeClose)
+            );
 
-        try {
-            wait.until(ExpectedConditions.elementToBeClickable(welcomeBannerDismiss)).click();
-        } catch (Exception ignored) {}
+            closeButton.click();
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(welcomeClose));
+        } catch (org.openqa.selenium.TimeoutException ignored) {
+            // Welcome dialog was not displayed.
+        }
 
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".cdk-overlay-backdrop")));
         dismissCookieConsent();
     }
 
     private void dismissCookieConsent() {
-        boolean cookieVisible = driver.findElements(cookieDialog).stream().anyMatch(WebElement::isDisplayed);
-        if (!cookieVisible) return;
+        List<WebElement> cookieBanners = driver.findElements(cookieDialog);
+        if (cookieBanners.stream().noneMatch(WebElement::isDisplayed)) return;
 
-        wait.until(ExpectedConditions.elementToBeClickable(cookieDismiss)).click();
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(cookieDialog));
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(cookieDismiss)).click();
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(cookieDialog));
+        } catch (ElementClickInterceptedException e) {
+            System.out.println("Cookie consent is blocked by another overlay.");
+
+            for (WebElement dialog : driver.findElements(By.cssSelector("[role='dialog'], mat-dialog-container"))) {
+                if (dialog.isDisplayed()) {
+                    System.out.println("Visible dialog: " + dialog.getText());
+                }
+            }
+
+            throw e;
+        }
     }
 
     @Override
     public void navigateToLoginViaNavbar() {
-        wait.until(ExpectedConditions.presenceOfElementLocated(accountMenu));
+        wait.until(d -> !d.findElements(accountMenu).isEmpty()
+                || !d.findElements(sideNavButton).isEmpty()
+                || !d.findElements(emailField).isEmpty());
 
-        if (driver.findElement(accountMenu).isDisplayed()) {
+        if (driver.findElements(emailField).stream().anyMatch(WebElement::isDisplayed)) return;
+
+        if (driver.findElements(accountMenu).stream().anyMatch(WebElement::isDisplayed)) {
             wait.until(ExpectedConditions.elementToBeClickable(accountMenu)).click();
             wait.until(ExpectedConditions.elementToBeClickable(loginMenuButton)).click();
         } else {
@@ -81,13 +105,14 @@ public class LoginPage extends BasePage {
 
     public boolean isUserLoggedIn() {
         try {
-            if (driver.findElement(accountMenu).isDisplayed()) {
+            if (driver.findElements(accountMenu).stream().anyMatch(WebElement::isDisplayed)) {
                 wait.until(ExpectedConditions.elementToBeClickable(accountMenu)).click();
                 return wait.until(ExpectedConditions.visibilityOfElementLocated(logoutButton)).isDisplayed();
             }
 
             wait.until(ExpectedConditions.elementToBeClickable(sideNavButton)).click();
             return wait.until(ExpectedConditions.visibilityOfElementLocated(sideNavLogout)).isDisplayed();
+
         } catch (Exception e) {
             return false;
         }
