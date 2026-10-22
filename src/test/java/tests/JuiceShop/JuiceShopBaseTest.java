@@ -7,6 +7,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import utilities.Docker.JuiceShopEnvironment;
 
+
 public abstract class JuiceShopBaseTest
 {
     protected static JuiceShopEnvironment container;

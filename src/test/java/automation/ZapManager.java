@@ -1,3 +1,4 @@
+
 package automation;
 
 import org.openqa.selenium.WebDriver;
@@ -11,19 +12,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 
-public class ZapManager
-{
+public class ZapManager {
+
     private static final ThreadLocal<OWASPZapEnvironment> zapEnvironment = new ThreadLocal<>();
     private static final ThreadLocal<ClientApi> zapClient = new ThreadLocal<>();
     private static final ThreadLocal<WebDriver> zapDriver = new ThreadLocal<>();
     private static final int DefaultTimeOut = 10;
 
-    private ZapManager(){}
+    private ZapManager() {}
 
-    public static void initZap()
-    {
-        if(zapEnvironment.get() == null)
-        {
+    public static void initZap() {
+        if (zapEnvironment.get() == null) {
             OWASPZapEnvironment env = new OWASPZapEnvironment();
             env.startEnvironment();
             zapEnvironment.set(env);
@@ -33,14 +32,12 @@ public class ZapManager
         }
     }
 
-    public static void initZapDriver()
-    {
-        if(zapEnvironment.get() == null)
-        {
+    public static void initZapDriver() {
+        if (zapEnvironment.get() == null) {
             initZap();
         }
-        if(zapDriver.get() == null)
-        {
+
+        if (zapDriver.get() == null) {
             String proxyAddress = zapEnvironment.get().getProxyAddress();
             WebDriver webDriver = BrowserFactory.createZapProxy(proxyAddress);
             webDriver.manage().window().maximize();
@@ -52,52 +49,41 @@ public class ZapManager
         }
     }
 
-    public static WebDriver getDriver()
-    {
-        if(zapDriver.get() == null)
-        {
+    public static WebDriver getDriver() {
+        if (zapDriver.get() == null) {
             initZapDriver();
         }
         return zapDriver.get();
     }
 
-    public static void quitZapDriver()
-    {
-        if(zapDriver.get() != null)
-        {
+    public static void quitZapDriver() {
+        if (zapDriver.get() != null) {
             zapDriver.get().quit();
             zapDriver.remove();
         }
     }
 
-    public static ClientApi getZapClient()
-    {
-        if(zapClient.get() == null)
-        {
+    public static ClientApi getZapClient() {
+        if (zapClient.get() == null) {
             initZap();
         }
         return zapClient.get();
     }
 
-    public static String getProxyAddress()
-    {
-        if(zapEnvironment.get() == null)
-        {
+    public static String getProxyAddress() {
+        if (zapEnvironment.get() == null) {
             initZap();
         }
         return zapEnvironment.get().getProxyAddress();
     }
 
-    public static void generateReport()
-    {
+    public static void generateReport() {
         ClientApi client = zapClient.get();
-        if(client == null) return;
+        if (client == null) return;
 
-        try
-        {
+        try {
             int recordsRemaining;
-            do
-            {
+            do {
                 Thread.sleep(1000);
                 ApiResponseElement response = (ApiResponseElement) client.pscan.recordsToScan();
                 recordsRemaining = Integer.parseInt(response.getValue());
@@ -107,18 +93,15 @@ public class ZapManager
             Path reportPath = Paths.get("target", "zap-report.html");
             Files.createDirectories(reportPath.getParent());
             Files.write(reportPath, report);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new RuntimeException("Failed to generate ZAP report.", e);
         }
     }
 
-    public static void quitZap()
-    {
+    public static void quitZap() {
         quitZapDriver();
-        if(zapEnvironment.get() != null)
-        {
+
+        if (zapEnvironment.get() != null) {
             zapEnvironment.get().stopEnvironment();
             zapEnvironment.remove();
             zapClient.remove();
