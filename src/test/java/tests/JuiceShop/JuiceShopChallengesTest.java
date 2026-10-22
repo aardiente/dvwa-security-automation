@@ -1,15 +1,20 @@
 package tests.JuiceShop;
 
+import pom.JuiceShop.LoginPage;
+import pom.JuiceShop.SearchPage;
+
+import utilities.ScreenshotHelper;
+
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.json.Json;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.WebElement;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import automation.ZapManager;
-import pom.JuiceShop.LoginPage;
-import pom.JuiceShop.SearchPage;
 
 import java.time.Duration;
 import java.util.List;
@@ -20,7 +25,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.InetSocketAddress;
 import java.net.ProxySelector;
-import utilities.ScreenshotHelper;
 
 
 public class JuiceShopChallengesTest extends JuiceShopBaseTest
@@ -164,11 +168,9 @@ public class JuiceShopChallengesTest extends JuiceShopBaseTest
         driver.get(baseUrl + "#/privacy-security/privacy-policy");
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.cssSelector("app-privacy-policy .privacy-policy")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("app-privacy-policy .privacy-policy")));
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(
-                By.cssSelector("app-privacy-policy img[src$='81px.png']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("app-privacy-policy img[src$='81px.png']")));
 
         ScreenshotHelper.capture(driver);
         assertChallengeSolved("Privacy Policy");
@@ -178,14 +180,12 @@ public class JuiceShopChallengesTest extends JuiceShopBaseTest
     public void testErrorHandlingChallenge() {
         var driver = ZapManager.getDriver();
 
-        String url = java.net.URI.create(baseUrl)
-                .resolve("/rest/products/search?q=%27%3B").toString();
+        String url = java.net.URI.create(baseUrl).resolve("/rest/products/search?q=%27%3B").toString();
 
         driver.get(url);
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(
-                By.tagName("body"), "SQLITE_ERROR"));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.tagName("body"), "SQLITE_ERROR"));
 
         ScreenshotHelper.capture(driver);
         assertChallengeSolved("Error Handling");
@@ -251,6 +251,41 @@ public class JuiceShopChallengesTest extends JuiceShopBaseTest
         ScreenshotHelper.capture(driver);
         assertChallengeSolved("Login Jim");
     }
+
+    @Test(priority = 15)
+    public void testAccessLogChallenge() {
+        var driver = ZapManager.getDriver();
+        driver.get(baseUrl + "/support/logs/");
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        WebElement logLink = wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.cssSelector("a[href*='access.log']")));
+
+        String logUrl = logLink.getAttribute("href");
+        Assert.assertNotNull(logUrl, "No access log link was found.");
+
+        ScreenshotHelper.capture(driver);
+        driver.get(logUrl);
+
+        assertChallengeSolved("Access Log");
+    }
+
+    @Test(priority = 16)
+    public void testMisplacedIaCFilesChallenge() {
+        var driver = ZapManager.getDriver();
+        driver.get(baseUrl + "/infrastructure/terraform/main.tf");
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(
+                By.tagName("body"), "provider"));
+
+        String content = driver.findElement(By.tagName("body")).getText();
+        Assert.assertTrue(content.contains("resource"), "Terraform configuration was not exposed.");
+
+        ScreenshotHelper.capture(driver);
+        assertChallengeSolved("Misplaced IaC Files");
+    }
+
 
 
     @Test(priority = 1000)
