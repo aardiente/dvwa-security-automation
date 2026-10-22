@@ -1,0 +1,36 @@
+2026-10-17 13:42:07.072 [main] INFO  org.testng.internal.Utils - [TestNG] Running:
+  C:\Users\antho\AppData\Local\JetBrains\IntelliJIdea2026.2\temp-testng-customsuite.xml
+
+2026-10-17 13:42:07.620 [main] INFO  tc.testcontainers/ryuk:0.8.1 - Creating container for image: testcontainers/ryuk:0.8.1
+2026-10-17 13:42:07.941 [main] INFO  tc.testcontainers/ryuk:0.8.1 - Container testcontainers/ryuk:0.8.1 is starting: e8e83c3d48bd54fb6716e57d5178b09188b5fb715c81399d05ab3f07ed3a74dc
+2026-10-17 13:42:08.274 [main] INFO  tc.testcontainers/ryuk:0.8.1 - Container testcontainers/ryuk:0.8.1 started in PT0.6543301S
+2026-10-17 13:42:08.280 [main] INFO  tc.vulnerables/web-dvwa:latest - Creating container for image: vulnerables/web-dvwa:latest
+2026-10-17 13:42:08.479 [main] INFO  tc.vulnerables/web-dvwa:latest - Container vulnerables/web-dvwa:latest is starting: 6e08d3aaae2e75520f643317de345c6af4b039937af78e2a807350bcbf8e6032
+2026-10-17 13:42:11.485 [main] INFO  tc.vulnerables/web-dvwa:latest - Container vulnerables/web-dvwa:latest started in PT3.2051435S
+2026-10-17 13:42:11.499 [main] INFO  tc.ghcr.io/zaproxy/zaproxy:stable - Creating container for image: ghcr.io/zaproxy/zaproxy:stable
+2026-10-17 13:42:11.712 [main] INFO  tc.ghcr.io/zaproxy/zaproxy:stable - Container ghcr.io/zaproxy/zaproxy:stable is starting: 2efafc59f53ea686b1227125ee23c2e4c54a80ee187a2602330a89fa1ff108de
+2026-10-17 13:42:28.639 [main] INFO  tc.ghcr.io/zaproxy/zaproxy:stable - Container ghcr.io/zaproxy/zaproxy:stable started in PT17.1404893S
+2026-10-17 13:52:47.908 [main] INFO  org.testng.internal.Utils - [TestNG] Running:
+  C:\Users\antho\AppData\Local\JetBrains\IntelliJIdea2026.2\temp-testng-customsuite.xml
+
+2026-10-17 13:52:48.536 [main] INFO  tc.testcontainers/ryuk:0.8.1 - Creating container for image: testcontainers/ryuk:0.8.1
+2026-10-17 13:52:48.883 [main] INFO  tc.testcontainers/ryuk:0.8.1 - Container testcontainers/ryuk:0.8.1 is starting: 0f85970e713a6e5d2f4c393ca3d4d2dffe94811ccb7591f57acd8936e311b151
+2026-10-17 13:52:49.389 [main] INFO  tc.testcontainers/ryuk:0.8.1 - Container testcontainers/ryuk:0.8.1 started in PT0.8530107S
+2026-10-17 13:52:49.395 [main] INFO  tc.vulnerables/web-dvwa:latest - Creating container for image: vulnerables/web-dvwa:latest
+2026-10-17 13:52:49.588 [main] INFO  tc.vulnerables/web-dvwa:latest - Container vulnerables/web-dvwa:latest is starting: 09945480c2b3d4ca75bb6779131b7a0ca2de31b3b816e3538ddaed8a1091fda5
+2026-10-17 13:52:53.126 [main] INFO  tc.vulnerables/web-dvwa:latest - Container vulnerables/web-dvwa:latest started in PT3.7309539S
+2026-10-17 13:52:53.132 [main] INFO  tc.ghcr.io/zaproxy/zaproxy:stable - Creating container for image: ghcr.io/zaproxy/zaproxy:stable
+2026-10-17 13:52:53.322 [main] INFO  tc.ghcr.io/zaproxy/zaproxy:stable - Container ghcr.io/zaproxy/zaproxy:stable is starting: 61ca8937170ceb34b7277c308065816808a2659334206d777761f5c0ab4e0783
+2026-10-17 13:53:12.180 [main] INFO  tc.ghcr.io/zaproxy/zaproxy:stable - Container ghcr.io/zaproxy/zaproxy:stable started in PT19.0476404S
+2026-10-17 13:59:35.611 [main] INFO  org.testng.internal.Utils - [TestNG] Running:
+  C:\Users\antho\AppData\Local\JetBrains\IntelliJIdea2026.2\temp-testng-customsuite.xml
+
+2026-10-17 13:59:36.157 [main] INFO  tc.testcontainers/ryuk:0.8.1 - Creating container for image: testcontainers/ryuk:0.8.1
+2026-10-17 13:59:36.450 [main] INFO  tc.testcontainers/ryuk:0.8.1 - Container testcontainers/ryuk:0.8.1 is starting: 0239b3d716ce3a9857cc039aac1c21d54e02cd4555caadb38d72b777e1acbc06
+2026-10-17 13:59:36.801 [main] INFO  tc.testcontainers/ryuk:0.8.1 - Container testcontainers/ryuk:0.8.1 started in PT0.6445341S
+2026-10-17 13:59:36.808 [main] INFO  tc.vulnerables/web-dvwa:latest - Creating container for image: vulnerables/web-dvwa:latest
+2026-10-17 13:59:36.953 [main] INFO  tc.vulnerables/web-dvwa:latest - Container vulnerables/web-dvwa:latest is starting: 8275affac4bf1be7ed34280e89b8ce671990577fc13191d7c9d4ff87e1157c7f
+2026-10-17 13:59:38.931 [main] INFO  tc.vulnerables/web-dvwa:latest - Container vulnerables/web-dvwa:latest started in PT2.1229566S
+2026-10-17 13:59:38.947 [main] INFO  tc.ghcr.io/zaproxy/zaproxy:stable - Creating container for image: ghcr.io/zaproxy/zaproxy:stable
+2026-10-17 13:59:39.107 [main] INFO  tc.ghcr.io/zaproxy/zaproxy:stable - Container ghcr.io/zaproxy/zaproxy:stable is starting: 1cf78c9a98845fa7be15ac757a9624187fecb8fda5bb080cb69891700e62e448
+2026-10-17 13:59:55.523 [main] INFO  tc.ghcr.io/zaproxy/zaproxy:stable - Container ghcr.io/zaproxy/zaproxy:stable started in PT16.5758716S

@@ -1,7 +1,4 @@
-package utilities;
-
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait; // NEW IMPORT
+package utilities.Docker;
 
 public class JuiceShopEnvironment extends DockerContainer
 {

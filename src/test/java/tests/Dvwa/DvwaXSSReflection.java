@@ -1,9 +1,8 @@
 package tests.Dvwa;
 
-import automation.DriverManager;
+import automation.ZapManager;
 
 import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -13,15 +12,12 @@ import org.testng.annotations.Test;
 
 import pom.Dvwa.LoginPage;
 import pom.Dvwa.SecurityPage;
-import pom.Dvwa.XssReflectedPage;
 import utilities.ExcelFileReader;
 
 import java.time.Duration;
 
 public class DvwaXSSReflection extends BaseDvwaTest
 {
-
-
     @DataProvider(name = "securityAndPayloads")
     public Object[][] getSecurityAndPayloads()
     {
@@ -48,8 +44,7 @@ public class DvwaXSSReflection extends BaseDvwaTest
     @Test(dataProvider = "securityAndPayloads")
     public void XSS_Reflected(String levelStr, String payload) throws InterruptedException
     {
-        var driver = DriverManager.getDriver();
-        String baseUrl = container.getURL();
+        var driver = ZapManager.getDriver();
 
         pom.Dvwa.SecurityPage.SecurityLevel securityLevel = null;
         for (pom.Dvwa.SecurityPage.SecurityLevel lvl : pom.Dvwa.SecurityPage.SecurityLevel.values())
@@ -64,18 +59,14 @@ public class DvwaXSSReflection extends BaseDvwaTest
         driver.get(baseUrl + LoginPage.loginEndpoint);
         LoginPage loginPage = new LoginPage(driver);
 
-        //loginPage.waitForPageLoad(LoginPage.loginEndpoint);
         loginPage.login("admin", "password");
 
         driver.get(baseUrl + SecurityPage.securityEndpoint);
         SecurityPage securityPage = new SecurityPage(driver);
 
-        //securityPage.waitForPageLoad(SecurityPage.securityEndpoint);
         securityPage.setSecurityLevel(securityLevel);
 
         loginPage.navigateToXssReflected();
-
-        //securityPage.waitForPageLoad(SecurityPage.securityEndpoint);
 
         WebDriverWait pageSettlementWait = new WebDriverWait(driver, Duration.ofSeconds(5));
         pageSettlementWait.until(ExpectedConditions.urlContains("xss_r"));
@@ -103,6 +94,4 @@ public class DvwaXSSReflection extends BaseDvwaTest
 
         Assert.assertFalse(xssExecuted, "Targeted XSS Exploit succesfully fired under setting [" + levelStr.toUpperCase() + "]");
     }
-
-
 }

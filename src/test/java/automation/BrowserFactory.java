@@ -10,6 +10,8 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 
+import org.openqa.selenium.Proxy;
+
 public class BrowserFactory
 {
     private static final boolean IS_HEADLESS = true;
@@ -47,5 +49,23 @@ public class BrowserFactory
             default:
                 throw new IllegalArgumentException("Unsupported Browser: " + brow);
         }
+    }
+    // Currently only supports chrome if that wasn't obvious.
+    public static WebDriver createZapProxy(String zapProxyAddress)
+    {
+        Proxy prox = new Proxy();
+        prox.setHttpProxy(zapProxyAddress);
+        prox.setSslProxy(zapProxyAddress);
+
+        ChromeOptions options = new ChromeOptions();
+        options.setProxy(prox);
+        options.setAcceptInsecureCerts(true);
+
+        if(IS_HEADLESS)
+            options.addArguments(headless);
+
+        options.addArguments("--proxy-bypass-list=<-loopback>");
+
+        return new ChromeDriver(options);
     }
 }

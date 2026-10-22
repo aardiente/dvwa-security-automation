@@ -1,10 +1,7 @@
 package tests.Dvwa;
 
-import automation.DriverManager;
+import automation.ZapManager;
 
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -13,7 +10,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import pom.Dvwa.LoginPage;
-import pom.Dvwa.SecurityPage;
 import pom.Dvwa.SqlInjectionPage;
 import utilities.ExcelFileReader;
 
@@ -48,8 +44,7 @@ public class DvwaSqlInjection extends BaseDvwaTest
     @Test(dataProvider = "securityAndPayloads")
     public void sqlInjection_Low(String s, String payload)
     {
-        var driver = DriverManager.getDriver();
-        String baseUrl = container.getURL();
+        var driver = ZapManager.getDriver();
 
         driver.get(baseUrl + LoginPage.loginEndpoint);
         LoginPage loginPage = new LoginPage(driver);
