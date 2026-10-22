@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+
+<suite name="DVWA Security Tests" parallel="false">
+    <test name="DVWA">
+        <classes>
+            <class name="tests.Dvwa.DvwaSqlInjection"/>
+            <class name="tests.Dvwa.DvwaXSSReflection"/>
+        </classes>
+    </test>
+</suite>

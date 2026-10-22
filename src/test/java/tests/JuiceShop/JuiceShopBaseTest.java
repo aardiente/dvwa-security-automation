@@ -1,3 +1,4 @@
+
 package tests.JuiceShop;
 
 import automation.ZapManager;
@@ -7,16 +8,16 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import utilities.Docker.JuiceShopEnvironment;
 
+public abstract class JuiceShopBaseTest {
 
-public abstract class JuiceShopBaseTest
-{
     protected static JuiceShopEnvironment container;
     protected static String baseUrl;
     protected String payloadSource = "";
 
     @BeforeSuite
-    public void startServer()
-    {
+    public void startServer() {
+        if (container != null) return;
+
         container = new JuiceShopEnvironment();
         container.startServer();
         baseUrl = container.getInternalURL();
@@ -25,18 +26,28 @@ public abstract class JuiceShopBaseTest
     }
 
     @AfterSuite(alwaysRun = true)
-    public void stopServer()
-    {
-        ZapManager.generateReport();
-        ZapManager.quitZap();
+    public void stopServer() {
+        if (container == null) return;
 
-        if(container != null)
-            container.stopEnvironment();
+        try {
+            ZapManager.generateReport("zap-juiceshop.html");
+        } finally {
+            try {
+                ZapManager.quitZap();
+            } finally {
+                container.stopEnvironment();
+                container = null;
+            }
+        }
     }
 
     @BeforeMethod
-    public void initBrowser() { ZapManager.initZapDriver(); }
+    public void initBrowser() {
+        ZapManager.initZapDriver();
+    }
 
-    @AfterMethod
-    public void closeBrowser() { ZapManager.quitZapDriver(); }
+    @AfterMethod(alwaysRun = true)
+    public void closeBrowser() {
+        ZapManager.quitZapDriver();
+    }
 }

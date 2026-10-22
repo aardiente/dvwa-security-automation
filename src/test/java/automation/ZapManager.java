@@ -9,7 +9,6 @@ import utilities.Docker.OWASPZapEnvironment;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 
 public class ZapManager {
@@ -78,11 +77,16 @@ public class ZapManager {
     }
 
     public static void generateReport() {
+        generateReport("zap-report.html");
+    }
+
+    public static void generateReport(String fileName) {
         ClientApi client = zapClient.get();
         if (client == null) return;
 
         try {
             int recordsRemaining;
+
             do {
                 Thread.sleep(1000);
                 ApiResponseElement response = (ApiResponseElement) client.pscan.recordsToScan();
@@ -90,11 +94,15 @@ public class ZapManager {
             } while (recordsRemaining != 0);
 
             byte[] report = client.core.htmlreport();
-            Path reportPath = Paths.get("target", "zap-report.html");
+            Path reportPath = Path.of("target", fileName);
+
             Files.createDirectories(reportPath.getParent());
             Files.write(reportPath, report);
+
+            System.out.println("[ZAP] Report generated: " + reportPath.toAbsolutePath());
+
         } catch (Exception e) {
-            throw new RuntimeException("Failed to generate ZAP report.", e);
+            throw new RuntimeException("Failed to generate ZAP report: " + fileName, e);
         }
     }
 
