@@ -1,0 +1,4 @@
+application:
+  chatBot:
+    model: 'qwen2.5:0.5b'
+    llmApiUrl: 'http://ollama:11434/v1'

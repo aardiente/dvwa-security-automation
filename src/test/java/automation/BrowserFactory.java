@@ -14,8 +14,9 @@ import org.openqa.selenium.Proxy;
 
 public class BrowserFactory
 {
-    private static final boolean IS_HEADLESS = true;
+    private static final boolean IS_HEADLESS = false;
     private static final String headless = "--headless=new";
+    private static final String windowSize = "--window-size=1920,1080";
 
     public static WebDriver createDriver(BrowserType brow)
     {
@@ -62,7 +63,10 @@ public class BrowserFactory
         options.setAcceptInsecureCerts(true);
 
         if(IS_HEADLESS)
+        {
             options.addArguments(headless);
+            options.addArguments(windowSize);
+        }
 
         options.addArguments("--proxy-bypass-list=<-loopback>");
 
