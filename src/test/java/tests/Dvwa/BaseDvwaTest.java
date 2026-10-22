@@ -1,30 +1,24 @@
+
 package tests.Dvwa;
 
+import automation.ZapManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-
 import org.testng.annotations.*;
-
-import automation.ZapManager;
-
-import utilities.Docker.DvwaEnvironment;
-
 import pom.Dvwa.*;
+import utilities.Docker.DvwaEnvironment;
 import utilities.ExcelFileReader;
 
-public abstract class BaseDvwaTest
-{
+public abstract class BaseDvwaTest {
+
     protected static DvwaEnvironment container;
     protected static String baseUrl;
     protected String payloadSource = "";
     protected String[] securityLevels = {"low", "medium", "high"};
 
-    /********************************************************************/
-
     @BeforeSuite
-    public void startServer()
-    {
-        //System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
+    public void startServer() {
+        if (container != null) return;
 
         container = new DvwaEnvironment();
         container.startEnvironment();
@@ -34,26 +28,33 @@ public abstract class BaseDvwaTest
     }
 
     @AfterSuite(alwaysRun = true)
-    public void stopServer()
-    {
-        ZapManager.generateReport();
-        ZapManager.quitZap();
+    public void stopServer() {
+        if (container == null) return;
 
-        if(container != null)
-            container.stopEnvironment();
+        try {
+            ZapManager.generateReport("zap-dvwa.html");
+        } finally {
+            try {
+                ZapManager.quitZap();
+            } finally {
+                container.stopEnvironment();
+                container = null;
+            }
+        }
     }
-    /********************************************************************/
 
     @BeforeMethod
-    public void initBrowser() { ZapManager.initZapDriver(); }
+    public void initBrowser() {
+        ZapManager.initZapDriver();
+    }
 
-    @AfterMethod
-    public void closeBrowser() { ZapManager.quitZapDriver(); }
+    @AfterMethod(alwaysRun = true)
+    public void closeBrowser() {
+        ZapManager.quitZapDriver();
+    }
 
-    /********************************************************************/
     @BeforeClass
-    public void initDvwaDatabase()
-    {
+    public void initDvwaDatabase() {
         ZapManager.initZapDriver();
         WebDriver driver = ZapManager.getDriver();
         LoginPage loginPage = new LoginPage(driver);
@@ -63,23 +64,21 @@ public abstract class BaseDvwaTest
 
         driver.get(baseUrl + "/setup.php");
         driver.findElement(By.name("create_db")).click();
-        System.out.println("Global DB Initialized");
 
+        System.out.println("Global DB Initialized");
         ZapManager.quitZapDriver();
     }
 
     @DataProvider(name = "securityAndPayloads")
-    public Object[][] getSecurityAndPayloads()
-    {
+    public Object[][] getSecurityAndPayloads() {
         Object[][] payloadsFromExcel = ExcelFileReader.extractData(payloadSource, null);
         Object[][] testData = new Object[payloadsFromExcel.length * securityLevels.length][2];
 
         int index = 0;
+
         for (String level : securityLevels) {
             for (Object[] row : payloadsFromExcel) {
                 testData[index][0] = level;
-
-                // Extracting the payload from the first column of the Excel row
                 testData[index][1] = row[0].toString();
                 index++;
             }
