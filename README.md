@@ -1,12 +1,18 @@
+
+
 \# OWASP Security Automation Framework
 
 
 
-A Java-based security testing framework designed to automate vulnerability assessments, execute security challenges, and analyze intentionally vulnerable web applications.
+A Java-based security automation framework for testing intentionally vulnerable web applications using \*\*Selenium, TestNG, Docker, OWASP ZAP, and Ollama\*\*.
 
 
 
-The project integrates \*\*Selenium WebDriver, TestNG, Docker, OWASP ZAP, and Ollama\*\* to provide a foundation for automated security testing and vulnerability research.
+The goal is to automate security challenges, demonstrate common attack vectors, collect testing evidence, and generate vulnerability assessment reports.
+
+
+
+> \*\*Project Status:\*\* Active Development
 
 
 
@@ -14,51 +20,43 @@ The project integrates \*\*Selenium WebDriver, TestNG, Docker, OWASP ZAP, and Ol
 
 
 
-\## Overview
+\## Supported Applications
 
 
 
-This framework automates security testing against intentionally vulnerable applications, with a focus on identifying and demonstrating common web application vulnerabilities.
+\### OWASP Juice Shop
+
+An intentionally vulnerable web application designed to demonstrate modern web security vulnerabilities.
 
 
 
-The project is under active development, with ongoing improvements to challenge coverage, security reporting, and automated testing capabilities.
+\- Automated security challenge execution
+
+\- SQL injection and cross-site scripting (XSS) testing
+
+\- Authentication and access control testing
+
+\- Challenge completion verification
+
+\- Automated screenshots and reporting
 
 
 
-\### Supported Applications
+\### DVWA (Damn Vulnerable Web Application)
+
+A deliberately vulnerable PHP/MySQL application used for security testing and vulnerability research.
 
 
 
-| Application | Description |
+\- Automated vulnerability testing
 
-|---|---|
+\- Multiple vulnerability categories and difficulty levels
 
-| \*\*OWASP Juice Shop\*\* | Modern, intentionally vulnerable web application covering OWASP security challenges. |
-
-| \*\*DVWA\*\* | Damn Vulnerable Web Application, designed for practicing and evaluating common web vulnerabilities. |
+\- Selenium-driven security testing
 
 
 
-\## Features
-
-
-
-\- \*\*Automated Security Challenges\*\* — Execute vulnerability-focused tests against supported applications.
-
-\- \*\*OWASP ZAP Integration\*\* — Capture HTTP traffic and generate security assessment reports.
-
-\- \*\*Docker Environment Management\*\* — Run vulnerable applications in isolated container environments.
-
-\- \*\*Automated Screenshots\*\* — Capture visual evidence during test execution.
-
-\- \*\*TestNG Integration\*\* — Organize, execute, and validate automated security tests.
-
-\- \*\*Page Object Model (POM)\*\* — Maintain reusable application-specific page interactions.
-
-\- \*\*Ollama Integration\*\* — Development area for local AI and chatbot security testing.
-
-\- \*\*Logging and Reporting\*\* — Generate execution logs, screenshots, and security reports.
+\---
 
 
 
@@ -68,7 +66,7 @@ The project is under active development, with ongoing improvements to challenge 
 
 | Technology | Purpose |
 
-|---|---|
+|------------|---------|
 
 | Java | Primary programming language |
 
@@ -76,13 +74,39 @@ The project is under active development, with ongoing improvements to challenge 
 
 | TestNG | Test execution and assertions |
 
-| Maven | Dependency management and builds |
+| Maven | Dependency management |
 
-| Docker / Docker Desktop | Containerized testing environments |
+| Docker | Containerized test environments |
 
-| OWASP ZAP | Web application security scanning and traffic analysis |
+| OWASP ZAP | Security scanning and HTTP traffic analysis |
 
-| Ollama | Local AI model integration |
+| Ollama | Local AI and chatbot testing (in development) |
+
+
+
+\---
+
+
+
+\## Features
+
+
+
+\- \*\*Automated Security Challenges:\*\* Execute vulnerability-focused tests against Juice Shop and DVWA.
+
+\- \*\*Page Object Model:\*\* Separate application interactions from test logic.
+
+\- \*\*Docker Integration:\*\* Manage isolated vulnerable application environments.
+
+\- \*\*OWASP ZAP Integration:\*\* Capture HTTP traffic and produce security assessment reports.
+
+\- \*\*Screenshot Capture:\*\* Save test evidence automatically using TestNG method names.
+
+\- \*\*Execution Logging:\*\* Record Selenium activity and errors.
+
+\- \*\*Headless Testing:\*\* Execute browser automation without displaying the browser window.
+
+\- \*\*AI Testing:\*\* Experimental Ollama integration for chatbot security testing.
 
 
 
@@ -94,25 +118,31 @@ The project is under active development, with ongoing improvements to challenge 
 
 
 
-Before executing the automation framework, ensure that the following are available:
+Ensure the following are installed:
 
 
 
 \- Java Development Kit (JDK)
 
-\- Docker Desktop
-
 \- IntelliJ IDEA or another Java IDE
 
 \- Maven or an IDE with Maven integration
 
+\- Docker Desktop
+
+\- Chrome or another supported browser
 
 
-\*\*Docker Desktop must be running and properly configured before executing tests that depend on containerized environments.\*\*
+
+\*\*Docker Desktop must be running before executing container-dependent tests.\*\*
 
 
 
-\## Docker Desktop Configuration
+\---
+
+
+
+\## Docker Configuration
 
 
 
@@ -120,25 +150,39 @@ Before executing the automation framework, ensure that the following are availab
 
 
 
-1\. Open \*\*Docker Desktop\*\*.
-
-2\. Navigate to \*\*Settings → Resources → WSL Integration\*\*.
-
-3\. Enable \*\*Integration with my default WSL distro\*\*.
-
-4\. Apply the changes.
+Open Docker Desktop and navigate to:
 
 
 
-\### 2. Configure the Docker Engine
+\*\*Settings → Resources → WSL Integration\*\*
 
 
 
-Navigate to \*\*Settings → Docker Engine\*\*.
+Enable:
 
 
 
-Ensure your Docker daemon configuration includes the following settings:
+`Integration with my default WSL distro`
+
+
+
+Apply the changes.
+
+
+
+\### 2. Configure Docker Engine
+
+
+
+Navigate to:
+
+
+
+\*\*Settings → Docker Engine\*\*
+
+
+
+The project has been developed using the following Docker configuration:
 
 
 
@@ -168,11 +212,7 @@ Ensure your Docker daemon configuration includes the following settings:
 
 
 
-Apply and restart Docker Desktop if prompted.
-
-
-
-> \*\*Note:\*\* These are the Docker daemon settings used for this project. Review and merge them with your existing configuration rather than overwriting unrelated settings. Compatibility may vary by Docker version.
+Review these settings for compatibility with your Docker version. Preserve any existing settings your environment requires.
 
 
 
@@ -180,31 +220,31 @@ Apply and restart Docker Desktop if prompted.
 
 
 
-\## Running the Tests
+\## Running Tests
 
 
 
-\### Using IntelliJ IDEA
+\### IntelliJ IDEA
 
 
 
-1\. Open the project in IntelliJ IDEA.
+1\. Open the project in IntelliJ.
 
 2\. Ensure Docker Desktop is running.
 
-3\. Allow Maven to resolve the project dependencies.
+3\. Allow Maven to load the project dependencies.
 
-4\. Navigate to the desired TestNG test class.
+4\. Navigate to the desired TestNG class.
 
-5\. Right-click the test class or method and select \*\*Run\*\*.
-
-
-
-\### Using Maven
+5\. Right-click the test class and select \*\*Run\*\*.
 
 
 
-If Maven is installed and available in your system PATH:
+\### Maven
+
+
+
+From the project root:
 
 
 
@@ -216,7 +256,11 @@ mvn test
 
 
 
-Test execution depends on the project's configured Maven and TestNG setup.
+This executes the tests configured for the Maven build.
+
+
+
+Individual tests can also be executed directly through IntelliJ.
 
 
 
@@ -224,11 +268,7 @@ Test execution depends on the project's configured Maven and TestNG setup.
 
 
 
-\## Reports and Test Evidence
-
-
-
-The framework generates several types of output to help analyze test execution and security findings.
+\## Reports and Logging
 
 
 
@@ -236,11 +276,11 @@ The framework generates several types of output to help analyze test execution a
 
 
 
-OWASP ZAP is \*\*partially integrated\*\* into the framework.
+OWASP ZAP is partially integrated into the framework.
 
 
 
-When ZAP reporting is enabled and invoked, an HTML security assessment report is generated at:
+When ZAP reporting is enabled and executed, an HTML report is generated at:
 
 
 
@@ -252,7 +292,7 @@ Automation/target/zap-report.html
 
 
 
-The report can be opened in a web browser to review detected security findings.
+Open the file in a browser to inspect security findings.
 
 
 
@@ -260,7 +300,7 @@ The report can be opened in a web browser to review detected security findings.
 
 
 
-Screenshots are captured during automated test execution and stored in:
+Screenshots are stored in:
 
 
 
@@ -272,33 +312,35 @@ Automation/target/screenshots/
 
 
 
-Each screenshot uses the corresponding TestNG test method name.
+Each screenshot is named after its TestNG test method.
 
 
 
-Example:
+Examples:
 
 
 
 ```text
 
-screenshots/
+testSqlInjectionLoginBypass.png
 
-├── testSqlInjectionLoginBypass.png
+testDomXssChallenge.png
 
-├── testDomXssChallenge.png
+testConfidentialDocumentChallenge.png
 
-├── testConfidentialDocumentChallenge.png
+testExposedMetricsChallenge.png
 
-├── testExposedMetricsChallenge.png
-
-└── testScoreBoardChallenge.png
+testScoreBoardChallenge.png
 
 ```
 
 
 
-Existing screenshots with the same filename are overwritten on subsequent runs.
+Screenshots with matching filenames are overwritten during subsequent test runs.
+
+
+
+The Juice Shop Score Board test runs last to capture the final challenge completion status.
 
 
 
@@ -306,7 +348,7 @@ Existing screenshots with the same filename are overwritten on subsequent runs.
 
 
 
-Application and automation logs are generated in:
+Logs are generated in:
 
 
 
@@ -318,7 +360,11 @@ Automation/logs/
 
 
 
-These logs can assist with debugging Selenium interactions, analyzing execution failures, and reviewing automated test activity.
+These logs provide information about browser interactions, automation execution, and errors.
+
+
+
+\*\*Note:\*\* Generated reports, logs, and screenshots should remain excluded from Git tracking through `.gitignore`.
 
 
 
@@ -326,21 +372,23 @@ These logs can assist with debugging Selenium interactions, analyzing execution 
 
 
 
-\## Project Development Roadmap
+\## Development Roadmap
 
 
 
-\- \[ ] Expand OWASP Juice Shop challenge automation coverage.
+\- \[ ] Automate all feasible OWASP Juice Shop challenges
 
-\- \[ ] Expand DVWA vulnerability testing.
+\- \[ ] Expand DVWA security testing coverage
 
-\- \[ ] Complete OWASP ZAP integration and improve vulnerability reporting.
+\- \[ ] Complete OWASP ZAP integration
 
-\- \[ ] Introduce automated API security testing.
+\- \[ ] Implement additional API security testing
 
-\- \[ ] Develop Ollama-powered chatbot security testing.
+\- \[ ] Complete Ollama chatbot integration
 
-\- \[ ] Create comprehensive HTML documentation for the automation framework.
+\- \[ ] Expand automated vulnerability reporting
+
+\- \[ ] Develop HTML documentation for framework classes and utilities
 
 
 
@@ -352,11 +400,11 @@ These logs can assist with debugging Selenium interactions, analyzing execution 
 
 
 
-This project is intended for \*\*educational purposes, security research, and authorized penetration testing\*\*.
+This project is intended for \*\*educational purposes, authorized security testing, and vulnerability research\*\*.
 
 
 
-The included applications are intentionally vulnerable and should be deployed only within controlled testing environments.
+The applications used in this framework are intentionally vulnerable and should only be deployed in controlled testing environments.
 
 
 
@@ -368,5 +416,7 @@ Do not use this framework against systems without explicit authorization.
 
 
 
-\*\*Project Status:\*\* Active Development
+\*\*OWASP Security Automation Framework — Active Development\*\*
+
+
 

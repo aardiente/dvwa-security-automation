@@ -14,25 +14,29 @@ import org.openqa.selenium.Proxy;
 
 public class BrowserFactory {
 
-    private static final boolean IS_HEADLESS = true;
+    private static final boolean IS_HEADLESS = false;
     private static final String headless = "--headless=new";
     private static final String windowSize = "--window-size=1920,1080";
+    private static final String zapOptions = "--proxy-bypass-list=<-loopback>";
+
+    private static final String[] headOptions = {headless, windowSize, zapOptions};
+    private static final String[] defaultOptions = {windowSize, zapOptions};
 
     public static WebDriver createDriver(BrowserType brow) {
         switch (brow) {
             case CHROME:
                 ChromeOptions chromeOp = new ChromeOptions();
-                if (IS_HEADLESS) chromeOp.addArguments(headless);
+                chromeOp.addArguments(IS_HEADLESS ? headOptions : defaultOptions);
                 return new ChromeDriver(chromeOp);
 
             case FIREFOX:
                 FirefoxOptions foxOp = new FirefoxOptions();
-                if (IS_HEADLESS) foxOp.addArguments(headless);
+                foxOp.addArguments(IS_HEADLESS ? headOptions : defaultOptions); // Requires changes doesnt use --headless=new
                 return new FirefoxDriver(foxOp);
 
             case EDGE:
                 EdgeOptions edgeOp = new EdgeOptions();
-                if (IS_HEADLESS) edgeOp.addArguments(headless);
+                edgeOp.addArguments(IS_HEADLESS ? headOptions : defaultOptions);
                 return new EdgeDriver(edgeOp);
 
             case SAFARI:
@@ -53,12 +57,8 @@ public class BrowserFactory {
         options.setProxy(prox);
         options.setAcceptInsecureCerts(true);
 
-        if (IS_HEADLESS) {
-            options.addArguments(headless);
-            options.addArguments(windowSize);
-        }
+        options.addArguments(IS_HEADLESS ? headOptions : defaultOptions);
 
-        options.addArguments("--proxy-bypass-list=<-loopback>");
         return new ChromeDriver(options);
     }
 }
