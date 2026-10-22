@@ -1,63 +1,48 @@
+
 package pom.JuiceShop;
 
-import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
 public abstract class BasePage {
 
-    protected final WebDriver driver;
-    protected final WebDriverWait wait;
+    protected WebDriver driver;
+    protected WebDriverWait wait;
 
-    protected BasePage(WebDriver driver) {
+    private final By dismissBannerButton = By.cssSelector("button[aria-label='Close Welcome Banner']");
+    private final By acceptCookiesButton = By.cssSelector("a[aria-label='dismiss cookie message']");
+    private final By navAccountMenu = By.id("navbarAccount");
+    private final By navLoginButton = By.id("navbarLoginButton");
+    private final By searchIcon = By.className("mat-search_icon");
+    private final By searchBarInput = By.id("mat-input-0");
+
+    public BasePage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(
-                driver, Duration.ofSeconds(10)
-        );
-    }
-
-    protected WebElement visible(By locator) {
-        return wait.until(
-                ExpectedConditions.visibilityOfElementLocated(locator)
-        );
-    }
-
-    protected void click(By locator) {
-        wait.until(
-                ExpectedConditions.elementToBeClickable(locator)
-        ).click();
-    }
-
-    protected void type(By locator, String value) {
-        WebElement element = visible(locator);
-        element.clear();
-        element.sendKeys(value);
-    }
-
-    protected boolean isVisible(By locator) {
-        return driver.findElements(locator)
-                .stream()
-                .anyMatch(WebElement::isDisplayed);
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(7));
     }
 
     public void dismissInitialOverlays() {
-        dismissIfPresent(By.cssSelector(
-                "button[aria-label='Close Welcome Banner'], " +
-                        "button.close-dialog"
-        ));
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(dismissBannerButton)).click();
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".cdk-overlay-backdrop")));
+        } catch (Exception ignored) {}
 
-        dismissIfPresent(By.cssSelector(
-                "a[aria-label='dismiss cookie message']"
-        ));
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(acceptCookiesButton)).click();
+        } catch (Exception ignored) {}
     }
 
-    private void dismissIfPresent(By locator) {
-        for (WebElement element : driver.findElements(locator)) {
-            if (element.isDisplayed() && element.isEnabled()) {
-                element.click();
-                break;
-            }
-        }
+    public void navigateToLoginViaNavbar() {
+        wait.until(ExpectedConditions.elementToBeClickable(navAccountMenu)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(navLoginButton)).click();
+    }
+
+    public void searchForProduct(String keyword) {
+        wait.until(ExpectedConditions.elementToBeClickable(searchIcon)).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(searchBarInput)).sendKeys(keyword + "\n");
     }
 }
