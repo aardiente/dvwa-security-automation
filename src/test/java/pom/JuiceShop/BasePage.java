@@ -1,50 +1,63 @@
 package pom.JuiceShop;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.*;
+
 import java.time.Duration;
 
-public abstract class BasePage
-{
-    protected WebDriver driver;
-    protected WebDriverWait wait;
+public abstract class BasePage {
 
-    // 💡 Locators for global elements / intrusive overlays
-    private final By dismissBannerButton = By.cssSelector("button[aria-label='Close Welcome Banner']");
-    private final By acceptCookiesButton = By.cssSelector("a[aria-label='dismiss cookie message']");
-    private final By navAccountMenu = By.id("navbarAccount");
-    private final By navLoginButton = By.id("navbarLoginButton");
-    private final By searchIcon = By.className("mat-search_icon");
-    private final By searchBarInput = By.id("mat-input-0"); // Search input field
+    protected final WebDriver driver;
+    protected final WebDriverWait wait;
 
-    public BasePage(WebDriver driver) {
+    protected BasePage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(7));
+        this.wait = new WebDriverWait(
+                driver, Duration.ofSeconds(10)
+        );
     }
 
-    /**
-     * Clears persistent overlays that automatically block single-page app automation
-     */
+    protected WebElement visible(By locator) {
+        return wait.until(
+                ExpectedConditions.visibilityOfElementLocated(locator)
+        );
+    }
+
+    protected void click(By locator) {
+        wait.until(
+                ExpectedConditions.elementToBeClickable(locator)
+        ).click();
+    }
+
+    protected void type(By locator, String value) {
+        WebElement element = visible(locator);
+        element.clear();
+        element.sendKeys(value);
+    }
+
+    protected boolean isVisible(By locator) {
+        return driver.findElements(locator)
+                .stream()
+                .anyMatch(WebElement::isDisplayed);
+    }
+
     public void dismissInitialOverlays() {
-        try {
-            wait.until(ExpectedConditions.elementToBeClickable(dismissBannerButton)).click();
-        } catch (Exception e) { /* Banner didn't appear */ }
+        dismissIfPresent(By.cssSelector(
+                "button[aria-label='Close Welcome Banner'], " +
+                        "button.close-dialog"
+        ));
 
-        try {
-            wait.until(ExpectedConditions.elementToBeClickable(acceptCookiesButton)).click();
-        } catch (Exception e) { /* Cookie banner didn't appear */ }
+        dismissIfPresent(By.cssSelector(
+                "a[aria-label='dismiss cookie message']"
+        ));
     }
 
-    public void navigateToLoginViaNavbar() {
-        wait.until(ExpectedConditions.elementToBeClickable(navAccountMenu)).click();
-        wait.until(ExpectedConditions.elementToBeClickable(navLoginButton)).click();
-    }
-
-    public void searchForProduct(String keyword) {
-        // Juice Shop uses a stylized search button that must be expanded
-        wait.until(ExpectedConditions.elementToBeClickable(searchIcon)).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(searchBarInput)).sendKeys(keyword + "\n");
+    private void dismissIfPresent(By locator) {
+        for (WebElement element : driver.findElements(locator)) {
+            if (element.isDisplayed() && element.isEnabled()) {
+                element.click();
+                break;
+            }
+        }
     }
 }
