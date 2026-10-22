@@ -8,6 +8,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import utilities.Docker.JuiceShopEnvironment;
 
+import java.time.Duration;
+
 public abstract class JuiceShopBaseTest {
 
     protected static JuiceShopEnvironment container;
@@ -44,6 +46,7 @@ public abstract class JuiceShopBaseTest {
     @BeforeMethod
     public void initBrowser() {
         ZapManager.initZapDriver();
+        ZapManager.getDriver().manage().timeouts().implicitlyWait(Duration.ZERO);
     }
 
     @AfterMethod(alwaysRun = true)
