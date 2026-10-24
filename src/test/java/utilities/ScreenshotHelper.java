@@ -1,6 +1,8 @@
 
 package utilities;
 
+import automation.AppConfig;
+import automation.PresentationOverlay;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -31,12 +33,26 @@ public class ScreenshotHelper {
 
         try {
             Files.createDirectories(SCREENSHOT_DIR);
+
+            // Capture the original result before adding any presentation overlay.
             byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
             Files.write(screenshotPath, screenshot);
 
             System.out.println("[SCREENSHOT] Saved: " + screenshotPath.toAbsolutePath());
+
         } catch (IOException e) {
             throw new RuntimeException("Failed to save screenshot: " + testName, e);
+        }
+
+        // Keep the current result visible before the test navigates away.
+        // Disabled completely for normal and headless executions.
+        if (AppConfig.isSlowMoEnabled() && !AppConfig.isHeadless()) {
+            PresentationOverlay.show(driver, "RESULT",
+                    "ScreenshotHelper.capture(driver);",
+                    "Evidence captured: " + screenshotPath.getFileName());
+
+            System.out.println("[PRESENTATION] Displaying result: " + testName);
+            AppConfig.pauseForResults();
         }
     }
 
@@ -71,7 +87,10 @@ public class ScreenshotHelper {
             Files.writeString(preview, html, StandardCharsets.UTF_8);
 
             driver.get(preview.toUri().toString());
+
+            // capture() also displays the HTTP response during presentation mode.
             capture(driver);
+
         } catch (IOException e) {
             throw new RuntimeException("Failed to create HTTP response preview.", e);
         } finally {
