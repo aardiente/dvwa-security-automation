@@ -1,424 +1,496 @@
 
 # OWASP Security Automation Framework
 
-A Java-based security automation framework for testing intentionally vulnerable web applications using Selenium WebDriver, TestNG, Docker Testcontainers, and OWASP ZAP.
+A Java-based security testing framework for automating vulnerability assessments, security challenges, and browser-based testing against intentionally vulnerable web applications.
 
-The framework provides automated security testing, data-driven payload execution, vulnerability detection, and HTML security reports for DVWA and OWASP Juice Shop.
+Built with **Java, Selenium WebDriver, TestNG, Maven, Docker, OWASP ZAP, and Ollama**.
 
-**Language:** Java 17  
-**Build Tool:** Maven  
-**Status:** Active Development
+**Project Status:** Active Development
 
-> **Important:** This is a security-testing framework. DVWA tests intentionally fail when a vulnerability or security finding is detected. A failed assertion can therefore represent a successful vulnerability detection rather than broken automation.
+---
 
-## Applications Under Test
-
-| Application | Automated Coverage |
-|---|---|
-| DVWA (Damn Vulnerable Web Application) | Reflected XSS and SQL Injection |
-| OWASP Juice Shop | Authentication bypass, DOM XSS, exposed resources, administration access, and additional security challenges |
-
-### DVWA
-
-Security testing includes:
-
-- Reflected Cross-Site Scripting (XSS) at LOW, MEDIUM, and HIGH security levels.
-- SQL Injection testing at LOW security.
-- Excel-driven security payloads.
-- Security-level verification using DVWA's `security` cookie.
-- Intentional TestNG assertion failures when vulnerabilities are detected.
+## Supported Applications
 
 ### OWASP Juice Shop
 
-Challenge-based testing includes:
+An intentionally vulnerable web application designed to demonstrate modern web security vulnerabilities.
 
-- Authentication bypass.
-- DOM-based XSS.
-- Exposed confidential documents.
-- Administrative functionality.
-- Security policy discovery.
-- Additional OWASP Juice Shop challenges.
+Current testing capabilities include:
 
-Unlike DVWA vulnerability tests, Juice Shop challenge tests generally pass when the expected challenge is successfully completed.
+- Automated security challenge execution
+- SQL injection and cross-site scripting (XSS) testing
+- Authentication and authorization testing
+- Security challenge completion verification
+- Automated screenshot capture
+- Score Board progress tracking
+
+### DVWA (Damn Vulnerable Web Application)
+
+An intentionally vulnerable PHP/MySQL application for testing common web application security vulnerabilities.
+
+Current testing capabilities include:
+
+- SQL injection testing
+- Reflected XSS testing
+- Multiple vulnerability security levels
+- Data-driven testing with external payload files
+- Automated browser interactions
+
+---
 
 ## Technology Stack
 
 | Technology | Purpose |
 |---|---|
-| Java 17 | Programming language |
-| Selenium WebDriver 4.49.0 | Browser automation |
-| TestNG 7.10.2 | Test execution and assertions |
+| Java | Primary programming language |
+| Selenium WebDriver | Browser automation |
+| TestNG | Test execution, assertions, and suite management |
 | Maven | Dependency management |
-| Docker | Container runtime |
-| Testcontainers 1.20.1 | Automated application and ZAP container management |
-| OWASP ZAP | Security proxy and passive vulnerability scanning |
-| Apache POI | Excel payload management |
-| SLF4J / Log4j 2 | Logging |
-| Page Object Model | Separation of page interactions and test logic |
+| Docker | Isolated application and scanning environments |
+| Testcontainers | Programmatic Docker container management |
+| OWASP ZAP | Web traffic interception and security analysis |
+| Apache POI | Excel-based test data |
+| Ollama | Experimental local AI integration |
+
+---
 
 ## Framework Features
 
-- Automated Docker environments for vulnerable applications.
-- Selenium Page Object Model architecture.
-- Data-driven security testing using Excel.
-- Configurable headed and headless Chrome execution.
-- Explicit waits for browser synchronization.
-- Optional SlowMo mode for demonstrations.
-- Configurable display duration for JavaScript alerts and security results.
-- OWASP ZAP traffic interception and passive scanning.
-- Separate HTML reports for DVWA and Juice Shop.
-- Screenshot capture for selected Juice Shop tests.
-- Intentional assertion failures for confirmed security findings.
+- **Page Object Model:** Separates test logic from web application interactions.
+- **Centralized Configuration:** Controls browser behavior through `config.properties`.
+- **Headless Browser Support:** Allows automated execution without a visible browser window.
+- **Cross-Browser Support:** Provides Selenium driver creation for Chrome, Firefox, Edge, and Safari, subject to browser-specific limitations.
+- **Docker Integration:** Starts intentionally vulnerable applications in isolated containers.
+- **OWASP ZAP Integration:** Routes Selenium traffic through a security proxy.
+- **Separate ZAP Reports:** Generates independent HTML reports for DVWA and Juice Shop.
+- **Automated Screenshots:** Captures browser evidence during testing.
+- **SlowMo Debugging:** Optionally highlights and delays Selenium interactions.
+- **Result Display:** Uses `browser.showResultsMs` to keep JavaScript alerts and selected results visible during SlowMo demonstrations.
+- **Security Findings:** DVWA tests intentionally fail assertions when a vulnerability or security finding is detected.
+- **TestNG Suites:** Supports individual application suites and combined execution.
+
+---
 
 ## Prerequisites
 
-Before running the framework, install:
+Install the following before running the framework:
 
-1. Java Development Kit (JDK 17 or later).
-2. Maven or IntelliJ IDEA with Maven integration.
-3. Docker Desktop with a running Docker engine.
-4. Google Chrome.
+- Java Development Kit (JDK)
+- IntelliJ IDEA or another Java IDE
+- Maven or an IDE with Maven integration
+- Docker Desktop with the Docker engine running
+- Google Chrome for ZAP-proxied tests
+- Browser drivers managed through Selenium Manager or the local environment
 
-Docker images and Maven dependencies are downloaded automatically when needed.
+Make sure Docker Desktop is running before executing container-dependent tests.
 
-DVWA, Juice Shop, and OWASP ZAP are managed through Testcontainers and do not need to be started manually.
+---
 
-## Installation
+## Project Configuration
 
-Clone the repository:
+The framework uses a centralized properties file to control Selenium browser behavior without requiring changes to Java source code.
 
-```bash
-git clone <repository-url>
-cd <repository-directory>
-```
-
-Open the project in IntelliJ IDEA or another Java IDE.
-
-Allow Maven to resolve dependencies.
-
-Verify Docker Desktop is running before executing tests.
-
-## Running Tests
-
-The project includes three TestNG suite configurations.
-
-### DVWA
-
-```bash
-mvn test -Dsurefire.suiteXmlFiles=testng-dvwa.xml
-```
-
-Runs the DVWA SQL Injection and Reflected XSS tests.
-
-### OWASP Juice Shop
-
-```bash
-mvn test -Dsurefire.suiteXmlFiles=testng-juiceshop.xml
-```
-
-Runs the configured Juice Shop challenge tests.
-
-### Complete Test Suite
-
-```bash
-mvn test -Dsurefire.suiteXmlFiles=testng-all.xml
-```
-
-Runs both application suites sequentially.
-
-Individual test classes and methods can also be executed directly through IntelliJ IDEA.
-
-## Browser Configuration
-
-Browser settings are managed through:
+### Configuration File Location
 
 `src/test/resources/config.properties`
 
-### Headless Configuration
-
-Recommended for automated verification:
+### Default Configuration
 
 ```properties
+# Browser configuration
 browser.headless=true
 browser.viewport.width=1920
 browser.viewport.height=1080
 browser.implicitWaitSeconds=0
 
+# SlowMo configuration
 browser.slowMo.enabled=false
 browser.slowMo.delayMs=250
 browser.showResultsMs=3000
 ```
 
-### Presentation Configuration
+### Configuration Properties
 
-Recommended when demonstrating browser interactions and vulnerability findings:
+| Property | Default | Description |
+|---|---|---|
+| `browser.headless` | `true` | Enables or disables headless browser execution |
+| `browser.viewport.width` | `1920` | Configures browser window width in pixels |
+| `browser.viewport.height` | `1080` | Configures browser window height in pixels |
+| `browser.implicitWaitSeconds` | `0` | Sets Selenium's implicit element wait |
+| `browser.slowMo.enabled` | `false` | Enables or disables visual interaction highlighting and delays |
+| `browser.slowMo.delayMs` | `250` | Sets the delay in milliseconds when SlowMo is enabled |
+| `browser.showResultsMs` | `3000` | Keeps supported security results and JavaScript alerts visible during SlowMo mode |
+
+### Headless Mode
+
+Headless mode runs the browser without displaying a visible window.
+
+To enable headless mode:
+
+```properties
+browser.headless=true
+```
+
+To display the browser during testing:
 
 ```properties
 browser.headless=false
+```
+
+The setting is applied when a new browser session starts.
+
+### Browser Viewport
+
+The configured browser window size is:
+
+```properties
 browser.viewport.width=1920
 browser.viewport.height=1080
-browser.implicitWaitSeconds=0
+```
 
+The framework applies these dimensions both through browser startup arguments where supported and through Selenium window management.
+
+**Important:** An explicit `1920x1080` browser window resolved previous headless UI interaction failures involving overlapping Juice Shop elements and cookie-consent dialogs.
+
+For that reason, maintaining a consistent browser window size is recommended when switching between headed and headless execution.
+
+The configured window dimensions are not necessarily identical to the webpage's internal viewport dimensions.
+
+### Selenium Implicit Wait
+
+```properties
+browser.implicitWaitSeconds=0
+```
+
+An implicit wait of zero prevents Selenium's element searches from automatically waiting for optional elements that are not present.
+
+The framework primarily uses explicit waits through `WebDriverWait` and `ExpectedConditions`.
+
+**Recommendation:** Keep the implicit wait at `0` unless a specific testing requirement justifies changing it.
+
+### SlowMo Debugging
+
+SlowMo can be enabled to visually highlight elements and introduce a configurable pause during Selenium interactions.
+
+To enable:
+
+```properties
+browser.slowMo.enabled=true
+browser.slowMo.delayMs=250
+```
+
+To disable:
+
+```properties
+browser.slowMo.enabled=false
+```
+
+When disabled, the listener does not add its optional highlighting and artificial interaction delays.
+
+SlowMo is intended for debugging and demonstrations. It should generally remain disabled during routine test runs to reduce execution time.
+
+When SlowMo is enabled, `browser.showResultsMs` controls the presentation pause before an observed JavaScript alert is accepted or dismissed, and before selected security tests finish showing results. This pause is disabled when `browser.slowMo.enabled=false`, regardless of the configured duration.
+
+```properties
 browser.slowMo.enabled=true
 browser.slowMo.delayMs=250
 browser.showResultsMs=3000
 ```
 
-### Configuration Options
+**Note:** SlowMo and result-display pauses are for presentations, not synchronization. Use Selenium explicit waits to determine when pages, elements, or alerts are ready.
 
-| Property | Description |
+### Configuration Loading
+
+Configuration values are loaded by:
+
+`src/test/java/automation/AppConfig.java`
+
+`AppConfig` provides settings to the following components:
+
+| Component | Configuration Usage |
 |---|---|
-| `browser.headless` | Enables or disables headless Chrome. |
-| `browser.viewport.width` | Browser window width. |
-| `browser.viewport.height` | Browser window height. |
-| `browser.implicitWaitSeconds` | Selenium implicit wait duration. |
-| `browser.slowMo.enabled` | Enables presentation mode. |
-| `browser.slowMo.delayMs` | Delay applied to supported browser interactions. |
-| `browser.showResultsMs` | Duration that selected results and JavaScript alerts remain visible. |
+| `BrowserFactory` | Headless mode and browser startup dimensions |
+| `DriverManager` | Browser window size and implicit wait |
+| `ZapManager` | ZAP-proxied browser window size and implicit wait |
+| `SlowMoListener` | Interaction highlighting, delay configuration, and alert-result display |
+| `DvwaSqlInjection` | Optional presentation pause before reporting SQL injection results |
 
-`browser.showResultsMs` only applies when SlowMo is enabled.
+Changes to `config.properties` take effect when tests run in a new JVM using the updated configuration.
 
-SlowMo is intended for demonstrations and does not replace Selenium's explicit waits.
+### Overriding Configuration in IntelliJ
 
-## DVWA Security Testing
+Configuration values can also be overridden using JVM system properties.
 
-### Reflected XSS
+In IntelliJ IDEA:
 
-The Reflected XSS tests use payloads from:
+1. Open **Run → Edit Configurations**.
+2. Select the relevant TestNG run configuration.
+3. Find **VM options**.
+4. Enter the properties you want to override.
+5. Run the test configuration.
 
-`src/test/java/data/xss_payloads.xlsx`
+Example:
 
-Payloads are tested against three security levels:
+```text
+-Dbrowser.headless=false
+-Dbrowser.viewport.width=1920
+-Dbrowser.viewport.height=1080
+```
 
-- LOW
-- MEDIUM
-- HIGH
+System properties take precedence over values defined in `config.properties`.
 
-Selenium submits each payload and checks whether a JavaScript alert executes.
+This is useful for switching between local debugging and automated execution without modifying the configuration file.
 
-**Test behavior:**
+---
 
-| Result | TestNG Outcome |
+## Docker Integration
+
+The framework uses Testcontainers to manage vulnerable applications and OWASP ZAP.
+
+Containerized environments include:
+
+- OWASP Juice Shop
+- DVWA
+- OWASP ZAP
+
+The framework uses a shared Docker network to support communication between application containers and the security proxy.
+
+Container startup and shutdown are managed by the corresponding environment classes and TestNG lifecycle methods.
+
+---
+
+## Running Tests
+
+Tests can be executed individually through IntelliJ IDEA or using TestNG suite configuration files.
+
+### IntelliJ IDEA
+
+1. Open the project in IntelliJ.
+2. Start Docker Desktop.
+3. Allow Maven dependencies to load.
+4. Confirm the desired settings in `config.properties`.
+5. Open the test class or TestNG suite XML.
+6. Right-click and select **Run**.
+
+### TestNG Suite Configurations
+
+| Suite | Purpose |
 |---|---|
-| JavaScript alert executes | FAIL — XSS vulnerability detected |
-| No alert detected | PASS — No alert-based execution confirmed |
-| Browser or setup exception | ERROR/FAIL — Automation issue |
+| `testng-dvwa.xml` | Execute DVWA security tests |
+| `testng-juiceshop.xml` | Execute Juice Shop challenge tests |
+| `testng-all.xml` | Execute both application suites sequentially |
 
-Successful XSS execution intentionally triggers an assertion failure.
+### Running with Maven
 
-The active DVWA security level is verified using its `security` cookie.
+To run tests with Maven:
 
-### SQL Injection
+```bash
+mvn test
+```
 
-SQL injection payloads are supplied through:
+To select a specific TestNG suite when using Maven Surefire:
 
-`src/test/java/data/sqli_payloads.xlsx`
+```bash
+mvn test -Dsurefire.suiteXmlFiles=testng-juiceshop.xml
+```
 
-Testing is performed against DVWA's LOW-security SQL injection page.
+Or:
 
-The framework compares normal database responses with injected responses to identify potential security findings.
+```bash
+mvn test -Dsurefire.suiteXmlFiles=testng-dvwa.xml
+```
 
-Security findings include:
+Suite execution depends on the project's configured Maven Surefire setup.
 
-- SQL injection that changes database query results.
-- Unauthorized database information disclosure.
-- SQL or MariaDB error disclosure.
-- SQL-like input accepted by the application, reported separately from confirmed injection execution.
+To run the combined suite explicitly:
 
-**Test behavior:**
+```bash
+mvn test -Dsurefire.suiteXmlFiles=testng-all.xml
+```
 
-| Result | TestNG Outcome |
-|---|---|
-| Confirmed SQL injection | FAIL |
-| Credential or unauthorized data disclosure | FAIL |
-| SQL/MariaDB error disclosure | FAIL |
-| Unsafe SQL input accepted, according to configured assertions | FAIL |
-| No detected finding | PASS |
+### Running the Full Framework
 
-A database error is reported as a security finding but does not independently prove successful SQL injection.
+The intended combined suite sequence is:
 
-Similarly, reflected payload text does not independently prove that the database executed injected SQL commands.
+1. Start the DVWA and ZAP environments.
+2. Execute DVWA security tests.
+3. Generate the DVWA ZAP report.
+4. Shut down DVWA and ZAP.
+5. Start the Juice Shop and ZAP environments.
+6. Execute Juice Shop security tests.
+7. Capture the final Score Board screenshot.
+8. Generate the Juice Shop ZAP report.
+9. Shut down the remaining containers.
 
-## OWASP Juice Shop Testing
+Application execution is separated to avoid mixing DVWA and Juice Shop traffic histories in the same ZAP report.
 
-Juice Shop tests automate selected security challenges using Selenium and the Page Object Model.
+### Interpreting TestNG Failures
 
-Challenge completion is verified through the expected application behavior or challenge status.
+**DVWA security tests deliberately use failing assertions to flag findings.** A triggered JavaScript alert in the Reflected XSS test produces a failure, because the payload executed. SQL injection tests can also report failures for demonstrated query manipulation or database error disclosure, depending on the current assertions.
 
-Unlike DVWA's vulnerability-detection tests, Juice Shop tests generally use positive assertions: the test passes when the expected challenge behavior is demonstrated.
+A Selenium `WebDriverException`, failure to set the DVWA security level, or an element timeout during setup is an **automation issue**, not a confirmed vulnerability. Review the failure message and stack trace before classifying a run.
 
-Additional experimental tests may exist in the source tree but are not included in the default Juice Shop TestNG suite.
+Juice Shop challenge tests generally use the opposite convention: a completed challenge passes.
+
+DVWA Reflected XSS is exercised at LOW, MEDIUM, and HIGH security levels; SQL injection payloads are loaded from `src/test/java/data/sqli_payloads.xlsx` and run at LOW security. Payload execution does not necessarily guarantee every attack succeeds.
+
+---
 
 ## OWASP ZAP Integration
 
-OWASP ZAP runs inside a Docker container during test execution.
+OWASP ZAP is used to intercept and analyze traffic generated during Selenium test execution.
 
-Selenium sends browser traffic through the configured ZAP proxy, allowing ZAP to inspect application requests and responses.
+### How It Works
 
-The framework uses passive scanning to identify potential security issues.
+1. The framework starts the ZAP Docker environment.
+2. Selenium creates a Chrome browser configured to use the ZAP proxy.
+3. Browser traffic passes through ZAP.
+4. ZAP records HTTP requests and responses.
+5. ZAP performs passive analysis on observed traffic.
+6. At suite completion, the framework waits for pending passive scanning to finish.
+7. An HTML report is generated.
 
-### Generated Reports
+### Separate Application Reports
 
-| Application | Report Location |
+| Application | Output File |
 |---|---|
 | DVWA | `target/zap-dvwa.html` |
 | OWASP Juice Shop | `target/zap-juiceshop.html` |
 
-Reports are generated during suite teardown.
+Reports can be opened directly in a web browser.
 
-Open the HTML files in a browser to review the detected alerts.
+### Reporting Limitations
 
-ZAP findings and Selenium assertions provide separate sources of security evidence.
+The current ZAP integration focuses on browser traffic interception, passive scanning, and HTML report generation.
 
-The default framework does not perform a ZAP active scan.
+- Automated active scanning is not currently part of the default reporting workflow.
+- Traffic that bypasses the configured ZAP proxy may not appear in reports.
+- Findings depend on the requests generated during the test run.
+- Successfully completing a Juice Shop challenge does not guarantee that ZAP will report a related vulnerability.
+- Reports are generated only when the relevant scanning and reporting lifecycle completes.
 
-## Screenshots and Logging
+Additional scanning and reporting functionality is planned.
 
-Selected tests capture screenshots as execution evidence.
+---
 
-Generated files are stored under:
+## Automated Screenshots
+
+The framework includes a reusable `ScreenshotHelper` utility.
+
+Screenshots are saved in:
+
+`target/screenshots/`
+
+Each screenshot uses the associated TestNG test method name.
+
+Example:
 
 ```text
 target/
 ├── screenshots/
+│   ├── testSqlInjectionLoginBypass.png
+│   ├── testDomXssChallenge.png
+│   └── testScoreBoardChallenge.png
 ├── zap-dvwa.html
-├── zap-juiceshop.html
-└── surefire-reports/
+└── zap-juiceshop.html
 ```
 
-Logs may also be generated in the configured logging directory.
+Screenshots with matching names are overwritten during subsequent runs.
 
-Generated reports, screenshots, and logs are intended as local execution artifacts.
+### Juice Shop Score Board
 
-## Project Structure
+The Score Board challenge test is configured with TestNG priority `1000` so that it executes after lower-priority challenge tests in the same execution context.
 
-```text
-.
-├── pom.xml
-├── README.md
-├── testng-dvwa.xml
-├── testng-juiceshop.xml
-├── testng-all.xml
-└── src/
-    └── test/
-        ├── java/
-        │   ├── automation/
-        │   │   ├── AppConfig.java
-        │   │   ├── SlowMoListener.java
-        │   │   └── ZapManager.java
-        │   ├── pom/
-        │   │   ├── Dvwa/
-        │   │   └── JuiceShop/
-        │   ├── tests/
-        │   │   ├── Dvwa/
-        │   │   └── JuiceShop/
-        │   ├── data/
-        │   │   ├── sqli_payloads.xlsx
-        │   │   └── xss_payloads.xlsx
-        │   └── utilities/
-        └── resources/
-            ├── config.properties
-            └── log4j2.xml
-```
+Its screenshot provides a visual summary of completed Juice Shop challenges.
 
-### Directory Responsibilities
-
-| Directory | Responsibility |
-|---|---|
-| `automation/` | Browser configuration, Selenium listeners, and ZAP management. |
-| `pom/Dvwa/` | DVWA Page Object Model classes. |
-| `pom/JuiceShop/` | Juice Shop Page Object Model classes. |
-| `tests/Dvwa/` | DVWA vulnerability tests. |
-| `tests/JuiceShop/` | Juice Shop challenge tests. |
-| `data/` | Excel-based security payloads. |
-| `utilities/` | Shared testing utilities and helpers. |
-| `resources/` | Runtime configuration and logging configuration. |
+---
 
 ## Troubleshooting
 
-### Selenium Element Errors
+### Headless Browser Click Failures
 
-If Selenium reports:
+**Symptoms:**
 
-```text
-Node with given id does not belong to the document
-```
+- `ElementClickInterceptedException`
+- Cookie-consent buttons blocked by other UI elements
+- Tests pass in visible Chrome but fail headless
 
-The browser may have navigated or refreshed while Selenium was interacting with an element from the previous document.
+**Recommended checks:**
 
-Avoid retaining WebElement references across navigation and use fresh element locators.
+1. Verify that `browser.viewport.width=1920`.
+2. Verify that `browser.viewport.height=1080`.
+3. Confirm that `BrowserFactory.setViewport()` is applied after browser creation.
+4. Review application dialogs and notifications that may overlap interactive elements.
 
-### DVWA Security-Level Issues
+Avoid replacing normal Selenium clicks with JavaScript clicks unless there is a specific, verified reason.
 
-If security-level configuration fails:
+### DVWA Security-Level Verification
 
-1. Verify the application login completed successfully.
-2. Confirm the security-setting form was submitted.
-3. Check the DVWA `security` cookie.
-4. Confirm the requested security level is active before proceeding.
+If DVWA tests fail before payload submission, check `SecurityPage.setSecurityLevel()` and confirm that the DVWA `security` cookie matches the requested LOW, MEDIUM, or HIGH setting. The current implementation verifies the cookie rather than retaining an HTML element across a page reload.
 
-### Intentional Assertion Failures
+### Expected Security Finding vs. Automation Error
 
-Messages such as:
+`Visual Verification Confirmed: XSS` followed by a TestNG `AssertionError` is an expected security finding. Errors such as `Node with given id does not belong to the document` indicate a browser synchronization problem instead. SQL error disclosure can be reported as a finding without asserting that an injected query executed successfully.
 
-```text
-Visual Verification Confirmed: XSS
-java.lang.AssertionError:
-Targeted XSS exploit successfully fired
-```
+### Slow Selenium Execution
 
-indicate a successful vulnerability detection.
+**Symptoms:**
 
-These failures are expected behavior for DVWA security tests.
+- UI tests take longer than expected.
+- Optional UI elements cause repeated delays.
 
-### JavaScript Alert Timeouts
+**Recommended checks:**
 
-If Selenium reports that it was waiting for an alert, the payload may not have triggered an observable JavaScript alert within the configured wait.
+1. Set `browser.slowMo.enabled=false`.
+2. Set `browser.implicitWaitSeconds=0`.
+3. Use explicit waits for elements that genuinely require synchronization.
+4. Check whether Chrome startup, Docker operations, or ZAP proxy activity contributes to execution time.
 
-This is not equivalent to a confirmed vulnerability finding.
+### Configuration File Not Found
 
-### Selenium CDP Version Warnings
+If the framework reports that `config.properties` is missing, confirm that the file exists at:
 
-Chrome and Selenium may report differences between supported Chrome DevTools Protocol versions.
+`src/test/resources/config.properties`
 
-These warnings do not automatically indicate a failed test.
+Ensure IntelliJ recognizes `src/test/resources` as a test resources directory.
 
-Investigate them if DevTools-dependent browser functionality stops working.
+### ZAP Report Not Generated
 
-### Docker or ZAP Startup Failures
+Verify that:
 
-Verify:
+- The ZAP container started successfully.
+- Selenium created the ZAP-proxied browser.
+- Test traffic passed through the proxy.
+- The suite completed its report-generation lifecycle.
+- The `target` directory is writable.
 
-- Docker Desktop is running.
-- Required container images are available.
-- Docker has sufficient resources.
-- The proxy container started successfully.
+---
 
-## Future Improvements
+## Development Roadmap
 
-- [x] Selenium Page Object Model implementation.
-- [x] Docker Testcontainers integration.
-- [x] Excel-driven vulnerability payloads.
-- [x] Automated DVWA and Juice Shop testing.
-- [x] Configurable headless execution.
-- [x] Presentation and SlowMo settings.
-- [x] OWASP ZAP passive scanning.
-- [x] Separate HTML security reports.
-- [x] Screenshot evidence.
-- [ ] Expand DVWA vulnerability coverage.
-- [ ] Add additional Juice Shop challenges.
-- [ ] Improve SQL injection verification.
-- [ ] Improve distinction between security findings and automation failures in CI reporting.
-- [ ] Expand ZAP scanning capabilities.
-- [ ] Standardize experimental chatbot testing.
+- [ ] Automate all feasible OWASP Juice Shop challenges
+- [ ] Expand DVWA vulnerability coverage
+- [x] Implement centralized browser configuration
+- [x] Add configurable headless execution and viewport dimensions
+- [x] Add configurable Selenium SlowMo behavior
+- [x] Add configurable result/alert presentation duration
+- [x] Verify the active DVWA security level using its security cookie
+- [x] Add separate DVWA and Juice Shop ZAP report generation
+- [ ] Expand ZAP active scanning and security reporting
+- [ ] Add additional API security tests
+- [ ] Complete Ollama chatbot integration
+- [ ] Develop comprehensive HTML framework documentation
+- [ ] Expand automated regression coverage
 
-## Responsible Use
+---
 
-This framework is intended for educational purposes, controlled security laboratories, and explicitly authorized penetration testing.
+## Security Disclaimer
 
-DVWA and OWASP Juice Shop are intentionally vulnerable applications and should not be exposed to untrusted networks.
+This project is intended for educational purposes, authorized penetration testing, and security research.
 
-Only perform security testing against applications you own or have permission to assess.
+The supported applications are intentionally vulnerable and should only be used in controlled testing environments.
+
+Do not execute security tests against systems without explicit authorization.
 
 ---
 
