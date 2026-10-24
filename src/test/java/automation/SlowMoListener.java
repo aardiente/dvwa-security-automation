@@ -28,6 +28,17 @@ public class SlowMoListener implements WebDriverListener {
     }
 
     @Override
+    public void afterGet(WebDriver driver, String url) {
+        if (!AppConfig.isSlowMoEnabled() || AppConfig.isHeadless()) return;
+
+        // Internal challenge verification isn't a presentation screen.
+        if (url != null && url.contains("/api/Challenges")) return;
+
+        PresentationOverlay.show(this.driver, "NAVIGATE", "driver.get(url);", "Page loaded");
+        pauseForNavigation();
+    }
+
+    @Override
     public void beforeFindElement(WebDriver driver, By locator) {
         log.debug("Finding element: {}", locator);
     }
@@ -35,13 +46,21 @@ public class SlowMoListener implements WebDriverListener {
     @Override
     public void beforeClick(WebElement element) {
         log.info("Clicking element: {}", element);
-        if (AppConfig.isSlowMoEnabled()) highlightAndPause(element);
+
+        if (AppConfig.isSlowMoEnabled()) {
+            PresentationOverlay.show(driver, "CLICK", "element.click();", "Clicking page element");
+            highlightAndPause(element);
+        }
     }
 
     @Override
     public void beforeSendKeys(WebElement element, CharSequence... keysToSend) {
         log.debug("Sending keys to element: {}", element);
-        if (AppConfig.isSlowMoEnabled()) highlightAndPause(element);
+
+        if (AppConfig.isSlowMoEnabled()) {
+            PresentationOverlay.show(driver, "TYPE", "element.sendKeys(...);", inputPreview(element, keysToSend));
+            highlightAndPause(element);
+        }
     }
 
     @Override
@@ -59,6 +78,29 @@ public class SlowMoListener implements WebDriverListener {
     @Override
     public void onError(Object target, Method method, Object[] args, InvocationTargetException e) {
         log.error("Selenium error during [{}]: {}", method.getName(), e.getTargetException().getMessage());
+    }
+
+    private String inputPreview(WebElement element, CharSequence... keys) {
+        try {
+            if ("password".equalsIgnoreCase(element.getDomAttribute("type"))) return "Input: [password hidden]";
+
+            StringBuilder text = new StringBuilder();
+            for (CharSequence key : keys) text.append(key);
+
+            String value = text.toString().replace("\r", "\\r").replace("\n", "\\n");
+            return "Input: " + (value.length() > 100 ? value.substring(0, 100) + "…" : value);
+        } catch (RuntimeException e) {
+            return "Entering input";
+        }
+    }
+
+    private void pauseForNavigation() {
+        try {
+            int delay = AppConfig.slowMoDelayMs();
+            if (delay > 0) Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private void highlightAndPause(WebElement element) {
