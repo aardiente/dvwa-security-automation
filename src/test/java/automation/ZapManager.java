@@ -9,6 +9,7 @@ import utilities.Docker.OWASPZapEnvironment;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 
 public class ZapManager {
@@ -16,7 +17,6 @@ public class ZapManager {
     private static final ThreadLocal<OWASPZapEnvironment> zapEnvironment = new ThreadLocal<>();
     private static final ThreadLocal<ClientApi> zapClient = new ThreadLocal<>();
     private static final ThreadLocal<WebDriver> zapDriver = new ThreadLocal<>();
-    private static final int DefaultTimeOut = 10;
 
     private ZapManager() {}
 
@@ -39,8 +39,9 @@ public class ZapManager {
         if (zapDriver.get() == null) {
             String proxyAddress = zapEnvironment.get().getProxyAddress();
             WebDriver webDriver = BrowserFactory.createZapProxy(proxyAddress);
-            webDriver.manage().window().maximize();
-            webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(DefaultTimeOut));
+
+            BrowserFactory.setViewport(webDriver);
+            webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(AppConfig.implicitWaitSeconds()));
 
             SlowMoListener listener = new SlowMoListener(webDriver);
             WebDriver decoratedDriver = new EventFiringDecorator<>(listener).decorate(webDriver);
@@ -52,6 +53,7 @@ public class ZapManager {
         if (zapDriver.get() == null) {
             initZapDriver();
         }
+
         return zapDriver.get();
     }
 
@@ -66,6 +68,7 @@ public class ZapManager {
         if (zapClient.get() == null) {
             initZap();
         }
+
         return zapClient.get();
     }
 
@@ -73,6 +76,7 @@ public class ZapManager {
         if (zapEnvironment.get() == null) {
             initZap();
         }
+
         return zapEnvironment.get().getProxyAddress();
     }
 
@@ -94,13 +98,16 @@ public class ZapManager {
             } while (recordsRemaining != 0);
 
             byte[] report = client.core.htmlreport();
-            Path reportPath = Path.of("target", fileName);
+            Path reportPath = Paths.get("target", fileName);
 
             Files.createDirectories(reportPath.getParent());
             Files.write(reportPath, report);
 
-            System.out.println("[ZAP] Report generated: " + reportPath.toAbsolutePath());
+            System.out.println("ZAP report generated: " + reportPath.toAbsolutePath());
 
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while generating ZAP report.", e);
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate ZAP report: " + fileName, e);
         }

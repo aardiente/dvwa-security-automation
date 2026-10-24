@@ -14,32 +14,49 @@ import org.openqa.selenium.Proxy;
 
 public class BrowserFactory {
 
-    private static final boolean IS_HEADLESS = false;
     private static final String headless = "--headless=new";
-    private static final String windowSize = "--window-size=1920,1080";
     private static final String zapOptions = "--proxy-bypass-list=<-loopback>";
 
-    private static final String[] headOptions = {headless, windowSize, zapOptions};
-    private static final String[] defaultOptions = {windowSize, zapOptions};
+    private static String windowSize() {
+        return "--window-size=" + AppConfig.viewportWidth() + "," + AppConfig.viewportHeight();
+    }
+
+    public static void setViewport(WebDriver driver) {
+        driver.manage().window().setSize(AppConfig.viewport());
+    }
 
     public static WebDriver createDriver(BrowserType brow) {
         switch (brow) {
             case CHROME:
                 ChromeOptions chromeOp = new ChromeOptions();
-                chromeOp.addArguments(IS_HEADLESS ? headOptions : defaultOptions);
+                chromeOp.addArguments(windowSize(), zapOptions);
+
+                if (AppConfig.isHeadless()) chromeOp.addArguments(headless);
+
                 return new ChromeDriver(chromeOp);
 
             case FIREFOX:
                 FirefoxOptions foxOp = new FirefoxOptions();
-                foxOp.addArguments(IS_HEADLESS ? headOptions : defaultOptions); // Requires changes doesnt use --headless=new
+                foxOp.addArguments("--width=" + AppConfig.viewportWidth());
+                foxOp.addArguments("--height=" + AppConfig.viewportHeight());
+
+                if (AppConfig.isHeadless()) foxOp.addArguments("-headless");
+
                 return new FirefoxDriver(foxOp);
 
             case EDGE:
                 EdgeOptions edgeOp = new EdgeOptions();
-                edgeOp.addArguments(IS_HEADLESS ? headOptions : defaultOptions);
+                edgeOp.addArguments(windowSize(), zapOptions);
+
+                if (AppConfig.isHeadless()) edgeOp.addArguments(headless);
+
                 return new EdgeDriver(edgeOp);
 
             case SAFARI:
+                if (AppConfig.isHeadless()) {
+                    throw new IllegalArgumentException("Headless mode is not supported for Safari");
+                }
+
                 SafariOptions safariOp = new SafariOptions();
                 return new SafariDriver(safariOp);
 
@@ -56,8 +73,9 @@ public class BrowserFactory {
         ChromeOptions options = new ChromeOptions();
         options.setProxy(prox);
         options.setAcceptInsecureCerts(true);
+        options.addArguments(windowSize(), zapOptions);
 
-        options.addArguments(IS_HEADLESS ? headOptions : defaultOptions);
+        if (AppConfig.isHeadless()) options.addArguments(headless);
 
         return new ChromeDriver(options);
     }
