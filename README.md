@@ -1,31 +1,39 @@
 # OWASP Security Automation Framework
 
-A Java-based security testing framework designed to automate vulnerability assessments, execute security challenges, and analyze intentionally vulnerable web applications.
+A Java-based security testing framework for automating vulnerability assessments, security challenges, and browser-based testing against intentionally vulnerable web applications.
 
-Built using **Selenium WebDriver, TestNG, Docker, OWASP ZAP, and Ollama**.
+Built with **Java, Selenium WebDriver, TestNG, Maven, Docker, OWASP ZAP, and Ollama**.
 
-> **Project Status:** Active Development
+**Project Status:** Active Development
 
 ---
 
 ## Supported Applications
 
 ### OWASP Juice Shop
+
 An intentionally vulnerable web application designed to demonstrate modern web security vulnerabilities.
 
-- Automated security challenge execution and verification
+Current testing capabilities include:
+
+- Automated security challenge execution
 - SQL injection and cross-site scripting (XSS) testing
-- Authentication and access control testing
-- Automated screenshots of security test execution
-- Challenge completion tracking through the Score Board
+- Authentication and authorization testing
+- Security challenge completion verification
+- Automated screenshot capture
+- Score Board progress tracking
 
 ### DVWA (Damn Vulnerable Web Application)
-A deliberately vulnerable PHP/MySQL application used for security testing and vulnerability research.
 
-- Automated vulnerability testing
-- Multiple security difficulty levels
-- Selenium-driven attack simulation
-- Data-driven testing using external payload files
+An intentionally vulnerable PHP/MySQL application for testing common web application security vulnerabilities.
+
+Current testing capabilities include:
+
+- SQL injection testing
+- Reflected XSS testing
+- Multiple vulnerability security levels
+- Data-driven testing with external payload files
+- Automated browser interactions
 
 ---
 
@@ -35,183 +43,301 @@ A deliberately vulnerable PHP/MySQL application used for security testing and vu
 |---|---|
 | Java | Primary programming language |
 | Selenium WebDriver | Browser automation |
-| TestNG | Test execution and assertions |
-| Maven | Dependency management and builds |
-| Docker | Containerized testing environments |
-| OWASP ZAP | HTTP traffic interception and security reporting |
-| Ollama | Local AI and chatbot security testing (in development) |
+| TestNG | Test execution, assertions, and suite management |
+| Maven | Dependency management |
+| Docker | Isolated application and scanning environments |
+| Testcontainers | Programmatic Docker container management |
+| OWASP ZAP | Web traffic interception and security analysis |
+| Apache POI | Excel-based test data |
+| Ollama | Experimental local AI integration |
 
 ---
 
-## Features
+## Framework Features
 
-- **Security Challenge Automation:** Execute vulnerability-focused tests against Juice Shop and DVWA.
-- **Page Object Model (POM):** Separate application interactions from test execution logic.
-- **Docker Integration:** Manage isolated testing environments.
-- **OWASP ZAP Integration:** Capture application traffic and generate independent security reports.
-- **Automated Screenshots:** Capture visual evidence using TestNG test method names.
-- **TestNG Suite Management:** Execute DVWA and Juice Shop tests independently or together.
-- **Execution Logging:** Record Selenium interactions and automation errors.
-- **Headless Browser Testing:** Run automated tests without displaying a browser window.
-- **AI Security Testing:** Experimental Ollama integration for chatbot testing.
+- **Page Object Model:** Separates test logic from web application interactions.
+- **Centralized Configuration:** Controls browser behavior through `config.properties`.
+- **Headless Browser Support:** Allows automated execution without a visible browser window.
+- **Cross-Browser Support:** Provides Selenium driver creation for Chrome, Firefox, Edge, and Safari, subject to browser-specific limitations.
+- **Docker Integration:** Starts intentionally vulnerable applications in isolated containers.
+- **OWASP ZAP Integration:** Routes Selenium traffic through a security proxy.
+- **Separate ZAP Reports:** Generates independent HTML reports for DVWA and Juice Shop.
+- **Automated Screenshots:** Captures browser evidence during testing.
+- **SlowMo Debugging:** Optionally highlights and delays Selenium interactions.
+- **TestNG Suites:** Supports individual application suites and combined execution.
 
 ---
 
 ## Prerequisites
 
-Ensure the following are installed:
+Install the following before running the framework:
 
 - Java Development Kit (JDK)
 - IntelliJ IDEA or another Java IDE
 - Maven or an IDE with Maven integration
-- Docker Desktop
-- Chrome or another supported browser
+- Docker Desktop with the Docker engine running
+- Google Chrome for ZAP-proxied tests
+- Browser drivers managed through Selenium Manager or the local environment
 
-**Docker Desktop must be running before executing container-dependent tests.**
+Make sure Docker Desktop is running before executing container-dependent tests.
 
 ---
 
-## Docker Configuration
+## Project Configuration
 
-### 1. Enable WSL Integration (Windows)
+The framework uses a centralized properties file to control Selenium browser behavior without requiring changes to Java source code.
 
-Open Docker Desktop and navigate to:
+### Configuration File Location
 
-**Settings → Resources → WSL Integration**
+`src/test/resources/config.properties`
 
-Enable:
+### Default Configuration
 
-`Integration with my default WSL distro`
+```properties
+# Browser configuration
+browser.headless=true
+browser.viewport.width=1920
+browser.viewport.height=1080
+browser.implicitWaitSeconds=0
 
-Apply the changes.
-
-### 2. Configure Docker Engine
-
-Navigate to:
-
-**Settings → Docker Engine**
-
-The project has been developed using the following configuration:
-
-```json
-{
-  "builder": {
-    "gc": {
-      "defaultKeepStorage": "20GB",
-      "enabled": true
-    }
-  },
-  "experimental": false,
-  "min-api-version": "1.24"
-}
+# SlowMo configuration
+browser.slowMo.enabled=false
+browser.slowMo.delayMs=250
 ```
 
-Review these settings for compatibility with your Docker version. Preserve any existing configuration your environment requires.
+### Configuration Properties
+
+| Property | Default | Description |
+|---|---|---|
+| `browser.headless` | `true` | Enables or disables headless browser execution |
+| `browser.viewport.width` | `1920` | Configures browser window width in pixels |
+| `browser.viewport.height` | `1080` | Configures browser window height in pixels |
+| `browser.implicitWaitSeconds` | `0` | Sets Selenium's implicit element wait |
+| `browser.slowMo.enabled` | `false` | Enables or disables visual interaction highlighting and delays |
+| `browser.slowMo.delayMs` | `250` | Sets the delay in milliseconds when SlowMo is enabled |
+
+### Headless Mode
+
+Headless mode runs the browser without displaying a visible window.
+
+To enable headless mode:
+
+```properties
+browser.headless=true
+```
+
+To display the browser during testing:
+
+```properties
+browser.headless=false
+```
+
+The setting is applied when a new browser session starts.
+
+### Browser Viewport
+
+The configured browser window size is:
+
+```properties
+browser.viewport.width=1920
+browser.viewport.height=1080
+```
+
+The framework applies these dimensions both through browser startup arguments where supported and through Selenium window management.
+
+**Important:** An explicit `1920x1080` browser window resolved previous headless UI interaction failures involving overlapping Juice Shop elements and cookie-consent dialogs.
+
+For that reason, maintaining a consistent browser window size is recommended when switching between headed and headless execution.
+
+The configured window dimensions are not necessarily identical to the webpage's internal viewport dimensions.
+
+### Selenium Implicit Wait
+
+```properties
+browser.implicitWaitSeconds=0
+```
+
+An implicit wait of zero prevents Selenium's element searches from automatically waiting for optional elements that are not present.
+
+The framework primarily uses explicit waits through `WebDriverWait` and `ExpectedConditions`.
+
+**Recommendation:** Keep the implicit wait at `0` unless a specific testing requirement justifies changing it.
+
+### SlowMo Debugging
+
+SlowMo can be enabled to visually highlight elements and introduce a configurable pause during Selenium interactions.
+
+To enable:
+
+```properties
+browser.slowMo.enabled=true
+browser.slowMo.delayMs=250
+```
+
+To disable:
+
+```properties
+browser.slowMo.enabled=false
+```
+
+When disabled, the listener does not add its optional highlighting and artificial interaction delays.
+
+SlowMo is intended for debugging and demonstrations. It should generally remain disabled during routine test runs to reduce execution time.
+
+### Configuration Loading
+
+Configuration values are loaded by:
+
+`src/test/java/automation/AppConfig.java`
+
+`AppConfig` provides settings to the following components:
+
+| Component | Configuration Usage |
+|---|---|
+| `BrowserFactory` | Headless mode and browser startup dimensions |
+| `DriverManager` | Browser window size and implicit wait |
+| `ZapManager` | ZAP-proxied browser window size and implicit wait |
+| `SlowMoListener` | Interaction highlighting and delay configuration |
+
+Changes to `config.properties` take effect when tests run in a new JVM using the updated configuration.
+
+### Overriding Configuration in IntelliJ
+
+Configuration values can also be overridden using JVM system properties.
+
+In IntelliJ IDEA:
+
+1. Open **Run → Edit Configurations**.
+2. Select the relevant TestNG run configuration.
+3. Find **VM options**.
+4. Enter the properties you want to override.
+5. Run the test configuration.
+
+Example:
+
+```text
+-Dbrowser.headless=false
+-Dbrowser.viewport.width=1920
+-Dbrowser.viewport.height=1080
+```
+
+System properties take precedence over values defined in `config.properties`.
+
+This is useful for switching between local debugging and automated execution without modifying the configuration file.
+
+---
+
+## Docker Integration
+
+The framework uses Testcontainers to manage vulnerable applications and OWASP ZAP.
+
+Containerized environments include:
+
+- OWASP Juice Shop
+- DVWA
+- OWASP ZAP
+
+The framework uses a shared Docker network to support communication between application containers and the security proxy.
+
+Container startup and shutdown are managed by the corresponding environment classes and TestNG lifecycle methods.
 
 ---
 
 ## Running Tests
 
-Tests can be executed individually or through TestNG suite configurations.
+Tests can be executed individually through IntelliJ IDEA or using TestNG suite configuration files.
 
 ### IntelliJ IDEA
 
-1. Open the project in IntelliJ IDEA.
-2. Ensure Docker Desktop is running.
-3. Allow Maven to resolve the project dependencies.
-4. Navigate to the desired TestNG test class or suite XML file.
-5. Right-click and select **Run**.
+1. Open the project in IntelliJ.
+2. Start Docker Desktop.
+3. Allow Maven dependencies to load.
+4. Confirm the desired settings in `config.properties`.
+5. Open the test class or TestNG suite XML.
+6. Right-click and select **Run**.
 
 ### TestNG Suite Configurations
 
-| Configuration | Description |
+| Suite | Purpose |
 |---|---|
-| `testng-dvwa.xml` | Runs the DVWA security tests |
-| `testng-juiceshop.xml` | Runs the OWASP Juice Shop challenge tests |
-| `testng-all.xml` | Executes both application suites sequentially |
+| `testng-dvwa.xml` | Execute DVWA security tests |
+| `testng-juiceshop.xml` | Execute Juice Shop challenge tests |
+| `testng-all.xml` | Execute both application suites sequentially |
 
-### Running the Entire Framework
+### Running with Maven
 
-Execute:
-
-`testng-all.xml`
-
-The intended execution sequence is:
-
-1. Start the DVWA Docker environment and OWASP ZAP.
-2. Execute the DVWA security tests.
-3. Generate the DVWA security report.
-4. Shut down the DVWA and ZAP environments.
-5. Start the Juice Shop Docker environment and a fresh ZAP session.
-6. Execute the Juice Shop security challenges.
-7. Capture the final Juice Shop Score Board screenshot.
-8. Generate the Juice Shop security report.
-9. Shut down the remaining containers.
-
-This sequence is designed to keep the applications' ZAP traffic histories separate.
-
-### Maven
-
-From the project root:
+To run tests with Maven:
 
 ```bash
 mvn test
 ```
 
-Maven executes tests according to the configured Surefire/TestNG setup. To run a specific suite through Maven, the corresponding suite configuration must be selected in the build configuration or command-line options.
+To select a specific TestNG suite when using Maven Surefire:
+
+```bash
+mvn test -Dsurefire.suiteXmlFiles=testng-juiceshop.xml
+```
+
+Or:
+
+```bash
+mvn test -Dsurefire.suiteXmlFiles=testng-dvwa.xml
+```
+
+Suite execution depends on the project's configured Maven Surefire setup.
+
+### Running the Full Framework
+
+The intended combined suite sequence is:
+
+1. Start the DVWA and ZAP environments.
+2. Execute DVWA security tests.
+3. Generate the DVWA ZAP report.
+4. Shut down DVWA and ZAP.
+5. Start the Juice Shop and ZAP environments.
+6. Execute Juice Shop security tests.
+7. Capture the final Score Board screenshot.
+8. Generate the Juice Shop ZAP report.
+9. Shut down the remaining containers.
+
+Application execution is separated to avoid mixing DVWA and Juice Shop traffic histories in the same ZAP report.
 
 ---
 
 ## OWASP ZAP Integration
 
-OWASP ZAP is integrated into the automation framework to intercept HTTP traffic, analyze web application behavior, and generate security assessment reports.
+OWASP ZAP is used to intercept and analyze traffic generated during Selenium test execution.
 
-### Independent Application Reports
+### How It Works
 
-The framework supports separate ZAP reports for DVWA and Juice Shop.
+1. The framework starts the ZAP Docker environment.
+2. Selenium creates a Chrome browser configured to use the ZAP proxy.
+3. Browser traffic passes through ZAP.
+4. ZAP records HTTP requests and responses.
+5. ZAP performs passive analysis on observed traffic.
+6. At suite completion, the framework waits for pending passive scanning to finish.
+7. An HTML report is generated.
 
-| Application | Report |
+### Separate Application Reports
+
+| Application | Output File |
 |---|---|
-| DVWA | `zap-dvwa.html` |
-| OWASP Juice Shop | `zap-juiceshop.html` |
+| DVWA | `target/zap-dvwa.html` |
+| OWASP Juice Shop | `target/zap-juiceshop.html` |
 
-Reports are generated in:
-
-```text
-Automation/
-└── target/
-    ├── zap-dvwa.html
-    └── zap-juiceshop.html
-```
-
-Each report can be opened in a web browser.
-
-### How Reporting Works
-
-The framework uses `ZapManager` to manage OWASP ZAP and its Selenium proxy connections.
-
-During test execution:
-
-1. ZAP starts in its Docker environment.
-2. Selenium browser traffic is routed through the ZAP proxy.
-3. ZAP records intercepted HTTP requests and responses.
-4. Passive scanning analyzes the captured traffic.
-5. At suite completion, the framework waits for pending passive scans to finish.
-6. An HTML report is saved using the corresponding application's filename.
-
-The two applications run in separate ZAP sessions when using the combined TestNG suite configuration.
+Reports can be opened directly in a web browser.
 
 ### Reporting Limitations
 
-OWASP ZAP integration currently focuses on **HTTP interception, passive scanning, and HTML report generation**.
+The current ZAP integration focuses on browser traffic interception, passive scanning, and HTML report generation.
 
-- Active vulnerability scanning is not automatically performed.
-- Direct Java HTTP requests that bypass the ZAP proxy are not included in its traffic history.
-- Findings depend on the requests executed during testing.
-- A completed Juice Shop challenge does not necessarily produce a corresponding ZAP alert.
-- Reports are generated when the relevant ZAP initialization and reporting lifecycle completes successfully.
+- Automated active scanning is not currently part of the default reporting workflow.
+- Traffic that bypasses the configured ZAP proxy may not appear in reports.
+- Findings depend on the requests generated during the test run.
+- Successfully completing a Juice Shop challenge does not guarantee that ZAP will report a related vulnerability.
+- Reports are generated only when the relevant scanning and reporting lifecycle completes.
 
-Additional API security testing and scanning functionality are planned.
+Additional scanning and reporting functionality is planned.
 
 ---
 
@@ -219,73 +345,110 @@ Additional API security testing and scanning functionality are planned.
 
 The framework includes a reusable `ScreenshotHelper` utility.
 
-Screenshots are saved under:
+Screenshots are saved in:
 
-```text
-Automation/target/screenshots/
-```
+`target/screenshots/`
 
-Each screenshot is named after its corresponding TestNG method.
+Each screenshot uses the associated TestNG test method name.
 
 Example:
 
 ```text
-screenshots/
-├── testSqlInjectionLoginBypass.png
-├── testDomXssChallenge.png
-├── testConfidentialDocumentChallenge.png
-├── testExposedMetricsChallenge.png
-└── testScoreBoardChallenge.png
+target/
+├── screenshots/
+│   ├── testSqlInjectionLoginBypass.png
+│   ├── testDomXssChallenge.png
+│   └── testScoreBoardChallenge.png
+├── zap-dvwa.html
+└── zap-juiceshop.html
 ```
 
-Existing screenshots with matching filenames are overwritten during subsequent test runs.
+Screenshots with matching names are overwritten during subsequent runs.
 
-### Juice Shop Score Board Verification
+### Juice Shop Score Board
 
-The `testScoreBoardChallenge()` method runs last in the Juice Shop challenge suite using TestNG priority `1000`.
+The Score Board challenge test is configured with TestNG priority `1000` so that it executes after lower-priority challenge tests in the same execution context.
 
-Its final screenshot provides a visual overview of completed security challenges.
+Its screenshot provides a visual summary of completed Juice Shop challenges.
 
 ---
 
-## Execution Logs
+## Troubleshooting
 
-Automation logs are generated under:
+### Headless Browser Click Failures
 
-```text
-Automation/logs/
-```
+**Symptoms:**
 
-These logs help with:
+- `ElementClickInterceptedException`
+- Cookie-consent buttons blocked by other UI elements
+- Tests pass in visible Chrome but fail headless
 
-- Debugging Selenium interactions
-- Reviewing browser navigation
-- Analyzing automation failures
-- Investigating test execution behavior
+**Recommended checks:**
 
-**Note:** Generated logs, screenshots, and reports should remain excluded from Git tracking through `.gitignore`.
+1. Verify that `browser.viewport.width=1920`.
+2. Verify that `browser.viewport.height=1080`.
+3. Confirm that `BrowserFactory.setViewport()` is applied after browser creation.
+4. Review application dialogs and notifications that may overlap interactive elements.
+
+Avoid replacing normal Selenium clicks with JavaScript clicks unless there is a specific, verified reason.
+
+### Slow Selenium Execution
+
+**Symptoms:**
+
+- UI tests take longer than expected.
+- Optional UI elements cause repeated delays.
+
+**Recommended checks:**
+
+1. Set `browser.slowMo.enabled=false`.
+2. Set `browser.implicitWaitSeconds=0`.
+3. Use explicit waits for elements that genuinely require synchronization.
+4. Check whether Chrome startup, Docker operations, or ZAP proxy activity contributes to execution time.
+
+### Configuration File Not Found
+
+If the framework reports that `config.properties` is missing, confirm that the file exists at:
+
+`src/test/resources/config.properties`
+
+Ensure IntelliJ recognizes `src/test/resources` as a test resources directory.
+
+### ZAP Report Not Generated
+
+Verify that:
+
+- The ZAP container started successfully.
+- Selenium created the ZAP-proxied browser.
+- Test traffic passed through the proxy.
+- The suite completed its report-generation lifecycle.
+- The `target` directory is writable.
 
 ---
 
 ## Development Roadmap
 
 - [ ] Automate all feasible OWASP Juice Shop challenges
-- [ ] Expand DVWA security testing coverage
-- [x] Implement independent DVWA and Juice Shop ZAP report generation
-- [ ] Expand ZAP scanning and security reporting
-- [ ] Implement additional API security testing
+- [ ] Expand DVWA vulnerability coverage
+- [x] Implement centralized browser configuration
+- [x] Add configurable headless execution and viewport dimensions
+- [x] Add configurable Selenium SlowMo behavior
+- [x] Add separate DVWA and Juice Shop ZAP report generation
+- [ ] Expand ZAP active scanning and security reporting
+- [ ] Add additional API security tests
 - [ ] Complete Ollama chatbot integration
-- [ ] Develop comprehensive HTML documentation for framework classes and utilities
+- [ ] Develop comprehensive HTML framework documentation
+- [ ] Expand automated regression coverage
 
 ---
 
 ## Security Disclaimer
 
-This project is intended for **educational purposes, authorized penetration testing, and vulnerability research**.
+This project is intended for educational purposes, authorized penetration testing, and security research.
 
-The applications used in this framework are intentionally vulnerable and should only be deployed in controlled testing environments.
+The supported applications are intentionally vulnerable and should only be used in controlled testing environments.
 
-Do not use this framework against systems without explicit authorization.
+Do not execute security tests against systems without explicit authorization.
 
 ---
 
