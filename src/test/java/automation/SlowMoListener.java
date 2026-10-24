@@ -1,6 +1,7 @@
 
 package automation;
 
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -34,15 +35,25 @@ public class SlowMoListener implements WebDriverListener {
     @Override
     public void beforeClick(WebElement element) {
         log.info("Clicking element: {}", element);
-
         if (AppConfig.isSlowMoEnabled()) highlightAndPause(element);
     }
 
     @Override
     public void beforeSendKeys(WebElement element, CharSequence... keysToSend) {
         log.debug("Sending keys to element: {}", element);
-
         if (AppConfig.isSlowMoEnabled()) highlightAndPause(element);
+    }
+
+    @Override
+    public void beforeAccept(Alert alert) {
+        log.info("Accepting JavaScript alert");
+        AppConfig.pauseForResults();
+    }
+
+    @Override
+    public void beforeDismiss(Alert alert) {
+        log.info("Dismissing JavaScript alert");
+        AppConfig.pauseForResults();
     }
 
     @Override

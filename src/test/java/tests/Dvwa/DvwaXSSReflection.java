@@ -1,38 +1,32 @@
+
 package tests.Dvwa;
 
 import automation.ZapManager;
-
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
 import pom.Dvwa.LoginPage;
 import pom.Dvwa.SecurityPage;
 import utilities.ExcelFileReader;
 
 import java.time.Duration;
 
-public class DvwaXSSReflection extends BaseDvwaTest
-{
-    @DataProvider(name = "securityAndPayloads")
-    public Object[][] getSecurityAndPayloads()
-    {
-        Object[][] payloadsFromExcel = ExcelFileReader.extractData("src/test/java/data/xss_payloads.xlsx", null);
+public class DvwaXSSReflection extends BaseDvwaTest {
 
+    @DataProvider(name = "securityAndPayloads")
+    public Object[][] getSecurityAndPayloads() {
+        Object[][] payloadsFromExcel = ExcelFileReader.extractData("src/test/java/data/xss_payloads.xlsx", null);
         String[] securityLevels = {"low", "medium", "high"};
 
         Object[][] testData = new Object[payloadsFromExcel.length * securityLevels.length][2];
-
         int index = 0;
+
         for (String level : securityLevels) {
             for (Object[] row : payloadsFromExcel) {
                 testData[index][0] = level;
-
-                // Extracting the payload from the first column of the Excel row
                 testData[index][1] = row[0].toString();
                 index++;
             }
@@ -42,28 +36,25 @@ public class DvwaXSSReflection extends BaseDvwaTest
     }
 
     @Test(dataProvider = "securityAndPayloads")
-    public void XSS_Reflected(String levelStr, String payload) throws InterruptedException
-    {
+    public void XSS_Reflected(String levelStr, String payload) {
         var driver = ZapManager.getDriver();
 
-        pom.Dvwa.SecurityPage.SecurityLevel securityLevel = null;
-        for (pom.Dvwa.SecurityPage.SecurityLevel lvl : pom.Dvwa.SecurityPage.SecurityLevel.values())
-        {
-            if (lvl.getSecurityLevel().equalsIgnoreCase(levelStr))
-            {
+        SecurityPage.SecurityLevel securityLevel = null;
+        for (SecurityPage.SecurityLevel lvl : SecurityPage.SecurityLevel.values()) {
+            if (lvl.getSecurityLevel().equalsIgnoreCase(levelStr)) {
                 securityLevel = lvl;
                 break;
             }
         }
 
         driver.get(baseUrl + LoginPage.loginEndpoint);
-        LoginPage loginPage = new LoginPage(driver);
 
+        LoginPage loginPage = new LoginPage(driver);
         loginPage.login("admin", "password");
 
         driver.get(baseUrl + SecurityPage.securityEndpoint);
-        SecurityPage securityPage = new SecurityPage(driver);
 
+        SecurityPage securityPage = new SecurityPage(driver);
         securityPage.setSecurityLevel(securityLevel);
 
         loginPage.navigateToXssReflected();
@@ -76,8 +67,7 @@ public class DvwaXSSReflection extends BaseDvwaTest
 
         boolean xssExecuted = false;
 
-        try
-        {
+        try {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
             wait.until(ExpectedConditions.alertIsPresent());
 
@@ -86,12 +76,12 @@ public class DvwaXSSReflection extends BaseDvwaTest
 
             alert.accept();
             xssExecuted = true;
-        }
-        catch (org.openqa.selenium.TimeoutException e)
-        {
+
+        } catch (org.openqa.selenium.TimeoutException e) {
             System.out.println("Payload execution blocked: " + e.getLocalizedMessage());
         }
 
-        Assert.assertFalse(xssExecuted, "Targeted XSS Exploit succesfully fired under setting [" + levelStr.toUpperCase() + "]");
+        Assert.assertFalse(xssExecuted,
+                "Targeted XSS exploit successfully fired under setting [" + levelStr.toUpperCase() + "]");
     }
 }

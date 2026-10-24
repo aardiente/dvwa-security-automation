@@ -91,4 +91,22 @@ public final class AppConfig {
     public static int slowMoDelayMs() {
         return getInt("browser.slowMo.delayMs", 0);
     }
+
+    public static int showResultsMs() {
+        return getInt("browser.showResultsMs", 0);
+    }
+
+    public static void pauseForResults() {
+        if (!isSlowMoEnabled()) return;
+
+        int delay = showResultsMs();
+        if (delay == 0) return;
+
+        try {
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Result display pause interrupted", e);
+        }
+    }
 }

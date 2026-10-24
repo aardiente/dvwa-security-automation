@@ -1,14 +1,16 @@
+
 package pom.Dvwa;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import java.time.Duration;
 
-public abstract class BasePage
-{
+public abstract class BasePage {
+
     protected WebDriver driver;
     protected WebDriverWait wait;
 
@@ -17,7 +19,6 @@ public abstract class BasePage
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    // 💡 Universal DVWA Sidebar Navigation Elements
     private final By logoutLink = By.linkText("Logout");
     private final By bruteForceMenu = By.linkText("Brute Force");
     private final By commandInjectionMenu = By.linkText("Command Injection");
@@ -34,83 +35,74 @@ public abstract class BasePage
     private final By phpInfoMenu = By.linkText("PHP Info");
     private final By aboutMenu = By.linkText("About");
 
-    public void clickLogout()
-    {
+    public void clickLogout() {
         wait.until(ExpectedConditions.elementToBeClickable(logoutLink)).click();
     }
 
-    public void navigateToBruteForce()
-    {
+    public void navigateToBruteForce() {
         wait.until(ExpectedConditions.elementToBeClickable(bruteForceMenu)).click();
     }
 
-    public void navigateToCommandInjection()
-    {
+    public void navigateToCommandInjection() {
         wait.until(ExpectedConditions.elementToBeClickable(commandInjectionMenu)).click();
     }
 
-    public void navigateToSqlInjection()
-    {
+    public void navigateToSqlInjection() {
         wait.until(ExpectedConditions.elementToBeClickable(sqlInjectionMenu)).click();
     }
 
-    public void navigateToDvwaSecurity()
-    {
+    public void navigateToDvwaSecurity() {
         wait.until(ExpectedConditions.elementToBeClickable(dvwaSecurityMenu)).click();
     }
 
-    public void navigateToXssReflected()
-    {
-        wait.until(ExpectedConditions.elementToBeClickable(xssReflectedMenu)).click();
+    public void navigateToXssReflected() {
+        wait.until(d -> {
+            try {
+                d.findElement(xssReflectedMenu).click();
+                return true;
+            } catch (StaleElementReferenceException e) {
+                return false;
+            }
+        });
     }
 
-    public void navigateToXssStored()
-    {
+    public void navigateToXssStored() {
         wait.until(ExpectedConditions.elementToBeClickable(xssStoredMenu)).click();
     }
 
-    public void navigateToCsrf()
-    {
+    public void navigateToCsrf() {
         wait.until(ExpectedConditions.elementToBeClickable(csrfMenu)).click();
     }
 
-    public void navigateToFileInclusion()
-    {
+    public void navigateToFileInclusion() {
         wait.until(ExpectedConditions.elementToBeClickable(fileInclusionMenu)).click();
     }
 
-    public void navigateToCspBypass()
-    {
+    public void navigateToCspBypass() {
         wait.until(ExpectedConditions.elementToBeClickable(cspBypassMenu)).click();
     }
 
-    public void navigateToSqlInjectionBlind()
-    {
+    public void navigateToSqlInjectionBlind() {
         wait.until(ExpectedConditions.elementToBeClickable(sqlInjectionBlindMenu)).click();
     }
 
-    public void navigateToWeakSessionIds()
-    {
+    public void navigateToWeakSessionIds() {
         wait.until(ExpectedConditions.elementToBeClickable(weakSessionMenu)).click();
     }
 
-    public void navigateToJavaScript()
-    {
+    public void navigateToJavaScript() {
         wait.until(ExpectedConditions.elementToBeClickable(javascriptMenu)).click();
     }
 
-    public void navigateToPhpInfo()
-    {
+    public void navigateToPhpInfo() {
         wait.until(ExpectedConditions.elementToBeClickable(phpInfoMenu)).click();
     }
 
-    public void navigateToAbout()
-    {
+    public void navigateToAbout() {
         wait.until(ExpectedConditions.elementToBeClickable(aboutMenu)).click();
     }
 
-    public void waitForPageLoad(String url)
-    {
+    public void waitForPageLoad(String url) {
         wait.until(ExpectedConditions.urlContains(url));
     }
 }
